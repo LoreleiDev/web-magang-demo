@@ -42,7 +42,7 @@ export default function Login() {
 
             <div className="grid min-h-dvh bg-background lg:grid-cols-[1.05fr_1fr]">
                 {/* Panel identitas: pita atas di smartphone, kolom kiri di desktop. */}
-                <section className="relative overflow-hidden bg-navy-900 bg-texture-dots px-6 pt-8 pb-24 text-white sm:px-10 lg:flex lg:flex-col lg:justify-between lg:px-14 lg:py-14">
+                <section className="relative overflow-hidden bg-navy-900 tekstur-titik px-6 pt-8 pb-24 text-white sm:px-10 lg:flex lg:flex-col lg:justify-between lg:px-14 lg:py-14">
                     <AppLogo tone="terang" />
 
                     <div className="mt-10 max-w-md lg:mt-0">

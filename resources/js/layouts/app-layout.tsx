@@ -49,7 +49,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     return (
         <TooltipProvider delayDuration={200}>
             <div className="min-h-dvh bg-background">
-                <aside className="fixed inset-y-0 left-0 z-30 hidden w-68 flex-col bg-navy-900 bg-texture-dots lg:flex">
+                <aside className="fixed inset-y-0 left-0 z-30 hidden w-68 flex-col bg-navy-900 tekstur-titik lg:flex">
                     <SidebarIsi nav={nav} user={user} url={page.url} />
                 </aside>
 
@@ -188,7 +188,7 @@ function MenuSeluler({
             </SheetTrigger>
             <SheetContent
                 side="left"
-                className="w-72 border-none bg-navy-900 bg-texture-dots p-0 text-white [&>button]:text-navy-200"
+                className="w-72 border-none bg-navy-900 tekstur-titik p-0 text-white [&>button]:text-navy-200"
             >
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SheetDescription className="sr-only">

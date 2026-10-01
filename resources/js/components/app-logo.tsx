@@ -3,14 +3,27 @@ import { cn } from '@/lib/utils';
 /**
  * Tanda MagangBridge: lengkung jembatan (sekolah ↔ industri) dengan titik hijau di puncaknya.
  */
-export function AppLogoMark({ className }: { className?: string }) {
+export function AppLogoMark({
+    className,
+    tone = 'gelap',
+}: {
+    className?: string;
+    tone?: 'gelap' | 'terang';
+}) {
     return (
         <svg
             viewBox="0 0 32 32"
             aria-hidden="true"
             className={cn('size-9 shrink-0', className)}
         >
-            <rect width="32" height="32" rx="9" className="fill-navy-900" />
+            <rect
+                width="32"
+                height="32"
+                rx="9"
+                className={
+                    tone === 'terang' ? 'fill-navy-700' : 'fill-navy-900'
+                }
+            />
             <path
                 d="M6 21.5h20"
                 className="stroke-white"
@@ -44,7 +57,7 @@ export function AppLogo({
 }) {
     return (
         <div className={cn('flex items-center gap-2.5', className)}>
-            <AppLogoMark />
+            <AppLogoMark tone={tone} />
             <div className="leading-none">
                 <div
                     className={cn(

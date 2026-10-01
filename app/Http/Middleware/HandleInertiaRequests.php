@@ -42,6 +42,8 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             'name' => config('app.name'),
+            // Kode => nama program keahlian, untuk label di semua halaman.
+            'programKeahlian' => config('magang.program_keahlian'),
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,
