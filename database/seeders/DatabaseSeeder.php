@@ -11,6 +11,7 @@ use App\Models\Perusahaan;
 use App\Models\ProfilGuru;
 use App\Models\ProfilIndustri;
 use App\Models\ProfilSiswa;
+use App\Models\ProgramKeahlian;
 use App\Models\ProgresKompetensi;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -31,6 +32,15 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        foreach ([
+            'TKJ' => 'Teknik Komputer dan Jaringan',
+            'RPL' => 'Rekayasa Perangkat Lunak',
+            'TKR' => 'Teknik Kendaraan Ringan',
+            'AKL' => 'Akuntansi dan Keuangan Lembaga',
+        ] as $kode => $nama) {
+            ProgramKeahlian::updateOrCreate(['kode' => $kode], ['nama' => $nama]);
+        }
+
         $this->akun('Admin Sekolah', 'admin@magangbridge.test', Role::Superadmin);
 
         $guruTkj = $this->guru('Budi Santoso, S.Kom.', 'budi.santoso@magangbridge.test', '198703122010011004', 'TKJ');

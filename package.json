@@ -11,6 +11,7 @@
         "types:check": "tsc --noEmit"
     },
     "dependencies": {
+        "@inertiajs/core": "3.7.1",
         "@inertiajs/react": "^3.0.0",
         "@inertiajs/vite": "^3.0.0",
         "@tailwindcss/vite": "^4.1.11",

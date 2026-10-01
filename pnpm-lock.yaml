@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@inertiajs/core':
+        specifier: 3.7.1
+        version: 3.7.1
       '@inertiajs/react':
         specifier: ^3.0.0
         version: 3.7.1(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -32,9 +35,6 @@ importers:
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
-      cn:
-        specifier: ^0.4.0
-        version: 0.4.0
       concurrently:
         specifier: ^10.0.3
         version: 10.0.5
@@ -1909,11 +1909,6 @@ packages:
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
     engines: {node: '>=6'}
-
-  cn@0.4.0:
-    resolution: {integrity: sha512-qOAeUhPwPzBxx6jaeQdo646XIKliKHc2j1ZF7Ngb1o0pJZKH5gq8FkA0aVdUdPFUDXNXyUCXpCtoJISo6dhizg==}
-    engines: {node: '>=20'}
-    hasBin: true
 
   code-excerpt@4.0.0:
     resolution: {integrity: sha512-xxodCmBen3iy2i0WtAK8FlFNrRzjUqjRsMfho58xT/wvZU1YTM3fCnRjcy1gJPMepaRlgm/0e6w8SpWHpn3/cA==}
@@ -4380,8 +4375,6 @@ snapshots:
       wrap-ansi: 9.0.2
 
   clsx@2.1.1: {}
-
-  cn@0.4.0: {}
 
   code-excerpt@4.0.0:
     dependencies:

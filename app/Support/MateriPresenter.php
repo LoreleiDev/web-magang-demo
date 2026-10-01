@@ -18,15 +18,13 @@ final class MateriPresenter
      */
     public static function ringkas(Materi $materi): array
     {
-        $program = config('magang.program_keahlian');
-
         return [
             'id' => $materi->id,
             'judul' => $materi->judul,
             'terverifikasi_industri' => $materi->terverifikasi_industri,
             'kompetensi' => $materi->kompetensi->nama_kompetensi_sekolah,
             'program_keahlian' => $materi->kompetensi->program_keahlian,
-            'program_keahlian_nama' => $program[$materi->kompetensi->program_keahlian] ?? $materi->kompetensi->program_keahlian,
+            'program_keahlian_nama' => $materi->kompetensi->program->nama ?? $materi->kompetensi->program_keahlian,
             'pembuat' => $materi->pembuat->name,
             'diubah_terakhir' => $materi->diubah_terakhir?->toIso8601String(),
         ];

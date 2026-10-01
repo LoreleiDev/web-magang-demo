@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\ProgramKeahlian;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -16,6 +17,12 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    ->beforeEach(function () {
+        // Program keahlian dasar yang dipakai factory.
+        foreach (['TKJ' => 'Teknik Komputer dan Jaringan', 'RPL' => 'Rekayasa Perangkat Lunak'] as $kode => $nama) {
+            ProgramKeahlian::updateOrCreate(['kode' => $kode], ['nama' => $nama]);
+        }
+    })
     ->in('Feature');
 
 /*

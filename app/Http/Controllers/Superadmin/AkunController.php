@@ -6,6 +6,7 @@ use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Superadmin\AkunRequest;
 use App\Models\Perusahaan;
+use App\Models\ProgramKeahlian;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -22,6 +23,9 @@ use Inertia\Response;
 class AkunController extends Controller
 {
     private const ROLE_DIKELOLA = [Role::Guru, Role::Siswa, Role::Industri];
+
+    /** @var array<string, string>|null */
+    private ?array $opsiProgram = null;
 
     public function index(Request $request): Response
     {
@@ -201,7 +205,7 @@ class AkunController extends Controller
      */
     private function baris(User $user): array
     {
-        $program = config('magang.program_keahlian');
+        $program = $this->opsiProgram ??= ProgramKeahlian::opsi();
 
         $keterangan = match ($user->role) {
             Role::Guru => array_filter([

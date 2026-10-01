@@ -47,6 +47,14 @@ class Kompetensi extends Model
     }
 
     /**
+     * @return BelongsTo<ProgramKeahlian, $this>
+     */
+    public function program(): BelongsTo
+    {
+        return $this->belongsTo(ProgramKeahlian::class, 'program_keahlian', 'kode');
+    }
+
+    /**
      * @return HasMany<Materi, $this>
      */
     public function materi(): HasMany

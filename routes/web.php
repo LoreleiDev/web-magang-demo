@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Guru;
 use App\Http\Controllers\Superadmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,10 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
 
     Route::resource('kelompok', Superadmin\KelompokMagangController::class)->except(['show', 'destroy']);
 
+    Route::resource('program-keahlian', Superadmin\ProgramKeahlianController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['program-keahlian' => 'programKeahlian']);
+
     Route::get('materi', [Superadmin\PemantauanController::class, 'materi'])->name('materi.index');
     Route::get('materi/{materi}', [Superadmin\PemantauanController::class, 'materiShow'])->name('materi.show');
     Route::get('logbook', [Superadmin\PemantauanController::class, 'logbook'])->name('logbook.index');
@@ -40,7 +45,18 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
 });
 
 Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
-    Route::inertia('/', 'guru/dashboard')->name('dashboard');
+    Route::get('/', Guru\DashboardController::class)->name('dashboard');
+
+    Route::get('siswa/{siswa}', [Guru\SiswaController::class, 'show'])->name('siswa.show');
+    Route::put('siswa/{siswa}/kompetensi/{kompetensi}', [Guru\SiswaController::class, 'isiLevel'])->name('siswa.level');
+
+    Route::resource('kompetensi', Guru\KompetensiController::class)->except(['show', 'destroy']);
+    Route::resource('materi', Guru\MateriController::class)->except('destroy');
+
+    Route::get('dokumen', [Guru\DokumenSekolahController::class, 'index'])->name('dokumen.index');
+    Route::post('dokumen', [Guru\DokumenSekolahController::class, 'store'])->name('dokumen.store');
+    Route::get('dokumen/{dokumen}', [Guru\DokumenSekolahController::class, 'show'])->name('dokumen.show');
+    Route::delete('dokumen/{dokumen}', [Guru\DokumenSekolahController::class, 'destroy'])->name('dokumen.destroy');
 });
 
 Route::middleware(['auth', 'role:industri'])->prefix('industri')->name('industri.')->group(function () {

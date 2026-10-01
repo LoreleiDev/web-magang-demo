@@ -529,7 +529,7 @@ Perpindahan status berjalan **otomatis** (keputusan 13 no. 13):
 
 Status tidak pernah mundur otomatis, kecuali "Menunggu verifikasi" kembali ke
 "Sedang dipraktikkan" jika guru menurunkan level di bawah target sebelum
-diverifikasi.
+diverifikasi. (Aturan sementara, menunggu konfirmasi pemilik proyek.)
 
 ## 11. Verifikasi
 
@@ -608,7 +608,7 @@ Teknis:
 | 12  | Media materi                                   | Hanya link: YouTube ditampilkan sebagai iframe, gambar & dokumen memakai link Google Drive                                      |
 | 13  | Perpindahan status kompetensi                  | Otomatis, sesuai tabel di bagian 10                                                                                             |
 | 14  | Syarat verifikasi kompetensi                   | Tombol "Verifikasi Kompetensi" hanya aktif saat status "Menunggu verifikasi"; industri tidak dapat membatalkan verifikasi       |
-| 15  | Program keahlian                               | Daftar tetap di `config/magang.php` (bukan teks bebas), dipakai di semua form dan pembatasan data                               |
+| 15  | Program keahlian                               | Dikelola superadmin (tabel `program_keahlian`: kode + nama), dipilih dari daftar di semua form dan dipakai untuk pembatasan data; kode tidak bisa diubah, program yang masih dipakai tidak bisa dihapus |
 | 16  | Hak edit kompetensi & materi                   | Guru hanya menambah/mengedit untuk program keahliannya sendiri (`ProfilGuru.program_keahlian`); belum ada fitur hapus           |
 | 17  | Superadmin melihat materi, logbook, assessment | Halaman baca-saja (read-only) di Panel Superadmin                                                                               |
 | 18  | Halaman Mulai Pendampingan                     | Hanya tampil sampai siswa memilih unit kerja; setelah itu login langsung ke Dashboard                                           |
@@ -617,16 +617,20 @@ Teknis:
 | 21  | Logbook                                        | Satu logbook per tanggal per siswa, dapat diedit; bukti kegiatan berupa gambar/PDF maks. 5 MB                                   |
 | 22  | Kuis                                           | Boleh diulang; semua percobaan disimpan; skor yang ditampilkan adalah skor terbaik                                              |
 | 23  | Autentikasi                                    | Starter kit React "blank" + login buatan sendiri (email + password, rate limit); tanpa registrasi, reset password, atau 2FA     |
+| 24  | Level siswa belum diisi guru                   | Dianggap level 1 (Belum mampu) untuk gap, Learning Gap, dan progres |
+| 25  | Akun                                           | Role tidak bisa diubah setelah dibuat; tidak ada hapus akun (cukup dinonaktifkan) |
+| 26  | Hapus data                                     | Kelompok tidak bisa dihapus; perusahaan yang masih dipakai kelompok/akun industri dan unit kerja yang masih dipilih siswa tidak bisa dihapus |
+| 27  | Unit kerja siswa                               | Dikosongkan (siswa memilih ulang) jika siswa pindah ke kelompok di perusahaan lain, dikeluarkan dari kelompok, atau perusahaan kelompok diganti |
+| 28  | Dokumen knowledge base                         | PDF, DOCX, atau TXT, maks. 20 MB per file |
 
-### 13.1 Belum Ditentukan
+### 13.1 Keputusan Badge Verifikasi Materi (sudah dijawab)
 
-Tanyakan ke pemilik proyek sebelum mengerjakan bagian 11.2:
-
-1. Materi bersifat umum, sehingga satu materi bisa diperiksa industri dari
-   beberapa perusahaan. Jika perusahaan A memverifikasi tetapi perusahaan B
-   memberi "Belum Sesuai", apakah badge tetap tampil?
-2. Jika guru mengedit materi yang sudah diverifikasi, apakah badge otomatis
-   hilang dan materi perlu diverifikasi ulang?
+1. Beberapa perusahaan memberi hasil berbeda: hanya hasil **terakhir dari
+   tiap perusahaan sejak materi terakhir diedit** yang dihitung. Badge tampil
+   jika minimal satu perusahaan memverifikasi **dan** tidak ada perusahaan yang
+   hasil terakhirnya "Belum Sesuai". (Usulan Claude, disetujui pemilik proyek.)
+2. Guru mengedit materi yang sudah diverifikasi: badge hilang dan materi perlu
+   diverifikasi ulang. Riwayat pemeriksaan lama tetap tersimpan.
 
 ---
 

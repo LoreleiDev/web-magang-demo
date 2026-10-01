@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\ProgramKeahlian;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -43,7 +44,7 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             'name' => config('app.name'),
             // Kode => nama program keahlian, untuk label di semua halaman.
-            'programKeahlian' => config('magang.program_keahlian'),
+            'programKeahlian' => fn () => ProgramKeahlian::opsi(),
             'auth' => [
                 'user' => $user ? [
                     'id' => $user->id,

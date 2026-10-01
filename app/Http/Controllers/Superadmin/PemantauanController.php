@@ -8,7 +8,9 @@ use App\Models\HasilAssessment;
 use App\Models\KelompokMagang;
 use App\Models\Logbook;
 use App\Models\Materi;
+use App\Models\ProgramKeahlian;
 use App\Models\User;
+use App\Support\LogbookPresenter;
 use App\Support\MateriPresenter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
@@ -61,21 +63,7 @@ class PemantauanController extends Controller
             ->latest('tanggal')
             ->paginate(15)
             ->withQueryString()
-            ->through(fn (Logbook $l) => [
-                'id' => $l->id,
-                'tanggal' => $l->tanggal->toDateString(),
-                'siswa' => $l->siswa->name,
-                'kelompok' => $l->siswa->profilSiswa?->kelompok?->nama_kelompok,
-                'aktivitas' => $l->aktivitas,
-                'peralatan_software' => $l->peralatan_software,
-                'sudah_dipahami' => $l->sudah_dipahami,
-                'baru_ditemui' => $l->baru_ditemui,
-                'kesulitan' => $l->kesulitan,
-                'pengetahuan_sekolah_digunakan' => $l->pengetahuan_sekolah_digunakan,
-                'ingin_dipelajari' => $l->ingin_dipelajari,
-                'ada_bukti' => $l->bukti_kegiatan !== null,
-                'sudah_dianalisis' => $l->hasil_analisis_ai !== null,
-            ]);
+            ->through(fn (Logbook $l) => LogbookPresenter::baris($l));
 
         return Inertia::render('superadmin/pemantauan/logbook', [
             'logbook' => $logbook,
@@ -126,7 +114,7 @@ class PemantauanController extends Controller
     {
         $program = (string) $request->query('program');
 
-        return array_key_exists($program, config('magang.program_keahlian')) ? $program : null;
+        return array_key_exists($program, ProgramKeahlian::opsi()) ? $program : null;
     }
 
     /**

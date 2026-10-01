@@ -23,7 +23,6 @@ class AkunRequest extends FormRequest
     {
         $akun = $this->akun();
         $role = $this->role();
-        $program = array_keys(config('magang.program_keahlian'));
 
         return [
             'name' => ['required', 'string', 'max:255'],
@@ -35,7 +34,7 @@ class AkunRequest extends FormRequest
             'program_keahlian' => [
                 Rule::excludeIf(! in_array($role, [Role::Guru, Role::Siswa], true)),
                 $role === Role::Siswa ? 'required' : 'nullable',
-                Rule::in($program),
+                Rule::exists('program_keahlian', 'kode'),
             ],
 
             // Guru

@@ -3,6 +3,9 @@ import {
     BookOpen,
     Building2,
     ClipboardCheck,
+    FileText,
+    GraduationCap,
+    Target,
     LayoutDashboard,
     NotebookPen,
     Users,
@@ -53,6 +56,11 @@ export function navigasiUntuk(role: Role): NavItem[] {
                     icon: UsersRound,
                 },
                 {
+                    title: 'Program Keahlian',
+                    href: superadmin.programKeahlian.index().url,
+                    icon: GraduationCap,
+                },
+                {
                     title: 'Materi',
                     href: superadmin.materi.index().url,
                     icon: BookOpen,
@@ -75,6 +83,21 @@ export function navigasiUntuk(role: Role): NavItem[] {
                     href: guru.dashboard().url,
                     icon: LayoutDashboard,
                     exact: true,
+                },
+                {
+                    title: 'Kompetensi',
+                    href: guru.kompetensi.index().url,
+                    icon: Target,
+                },
+                {
+                    title: 'Materi',
+                    href: guru.materi.index().url,
+                    icon: BookOpen,
+                },
+                {
+                    title: 'Dokumen Sekolah',
+                    href: guru.dokumen.index().url,
+                    icon: FileText,
                 },
             ];
         case 'industri':

@@ -8,6 +8,7 @@ use App\Http\Requests\Superadmin\KelompokMagangRequest;
 use App\Models\KelompokMagang;
 use App\Models\Perusahaan;
 use App\Models\ProfilSiswa;
+use App\Models\ProgramKeahlian;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
@@ -160,7 +161,7 @@ class KelompokMagangController extends Controller
      */
     private function opsi(?KelompokMagang $kelompok): array
     {
-        $program = config('magang.program_keahlian');
+        $program = ProgramKeahlian::opsi();
 
         return [
             'perusahaan' => Perusahaan::orderBy('nama')->get(['id', 'nama'])
