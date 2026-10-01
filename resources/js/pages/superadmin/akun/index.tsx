@@ -148,7 +148,11 @@ export default function AkunIndex({ akun, filter, jumlah }: Props) {
 
 function BarisAkunItem({ akun }: { akun: BarisAkun }) {
     const ubahStatus = () =>
-        router.patch(akunRoutes.status(akun.id).url, {}, { preserveScroll: true });
+        router.patch(
+            akunRoutes.status(akun.id).url,
+            {},
+            { preserveScroll: true },
+        );
 
     return (
         <li
