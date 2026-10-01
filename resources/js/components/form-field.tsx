@@ -23,7 +23,7 @@ export function FormField({
     children: ReactNode;
 }) {
     return (
-        <div className={cn('space-y-2', className)}>
+        <div className={cn('min-w-0 space-y-2', className)}>
             <Label htmlFor={htmlFor} className="text-navy-900">
                 {label}
                 {wajib && (

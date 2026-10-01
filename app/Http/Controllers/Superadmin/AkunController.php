@@ -211,7 +211,7 @@ class AkunController extends Controller
             Role::Siswa => array_filter([
                 'NIS '.$user->profilSiswa?->id_siswa,
                 $user->profilSiswa?->program_keahlian,
-                $user->profilSiswa?->kelompok?->nama_kelompok ?? 'Belum masuk kelompok',
+                $user->profilSiswa->kelompok->nama_kelompok ?? 'Belum masuk kelompok',
             ]),
             Role::Industri => array_filter([
                 $user->profilIndustri?->perusahaan->nama,
@@ -237,9 +237,8 @@ class AkunController extends Controller
      */
     private function opsiPerusahaan(): array
     {
-        return Perusahaan::orderBy('nama')->get(['id', 'nama'])
+        return array_values(Perusahaan::orderBy('nama')->get(['id', 'nama'])
             ->map(fn (Perusahaan $p) => ['id' => $p->id, 'nama' => $p->nama])
-            ->values()
-            ->all();
+            ->all());
     }
 }

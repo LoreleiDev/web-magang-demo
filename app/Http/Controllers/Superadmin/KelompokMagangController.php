@@ -167,7 +167,8 @@ class KelompokMagangController extends Controller
                 ->map(fn (Perusahaan $p) => ['id' => $p->id, 'nama' => $p->nama]),
             'guru' => User::query()
                 ->where('role', Role::Guru)
-                ->where(fn ($q) => $q->where('status_aktif', true)->orWhere('id', $kelompok?->guru_pembimbing_id))
+                ->where(fn ($q) => $q->where('status_aktif', true)
+                    ->when($kelompok, fn ($q) => $q->orWhere('id', $kelompok?->guru_pembimbing_id)))
                 ->with('profilGuru')
                 ->withCount('kelompokDibimbing')
                 ->orderBy('name')
@@ -183,8 +184,12 @@ class KelompokMagangController extends Controller
             'siswa' => User::query()
                 ->where('role', Role::Siswa)
                 ->whereHas('profilSiswa')
+                // Siswa nonaktif hanya tampil jika sudah menjadi anggota kelompok yang diedit.
                 ->where(fn ($q) => $q->where('status_aktif', true)
-                    ->orWhereHas('profilSiswa', fn ($q) => $q->where('kelompok_id', $kelompok?->id)))
+                    ->when($kelompok, fn ($q) => $q->orWhereHas(
+                        'profilSiswa',
+                        fn ($q) => $q->where('kelompok_id', $kelompok?->id),
+                    )))
                 ->with('profilSiswa.kelompok:id,nama_kelompok')
                 ->orderBy('name')
                 ->get()

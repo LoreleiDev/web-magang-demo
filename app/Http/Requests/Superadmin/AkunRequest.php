@@ -83,6 +83,6 @@ class AkunRequest extends FormRequest
 
     public function role(): ?Role
     {
-        return $this->akun()?->role ?? Role::tryFrom((string) $this->input('role'));
+        return $this->akun()->role ?? Role::tryFrom((string) $this->input('role'));
     }
 }

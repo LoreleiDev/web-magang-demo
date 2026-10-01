@@ -69,7 +69,7 @@ final class MateriPresenter
      */
     public static function riwayatVerifikasi(Materi $materi): array
     {
-        return $materi->verifikasi()
+        return array_values($materi->verifikasi()
             ->with(['pemeriksa:id,name', 'perusahaan:id,nama'])
             ->latest()
             ->get()
@@ -82,8 +82,7 @@ final class MateriPresenter
                 'perusahaan' => $v->perusahaan->nama,
                 'tanggal' => $v->created_at?->toIso8601String(),
             ])
-            ->values()
-            ->all();
+            ->all());
     }
 
     /**

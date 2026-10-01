@@ -189,7 +189,7 @@ export default function KelompokForm({
                             </Select>
                         </FormField>
                     </div>
-                    <div className="grid grid-cols-2 gap-3 sm:gap-5">
+                    <div className="grid gap-5 sm:grid-cols-2">
                         <FormField
                             label="Tanggal mulai"
                             htmlFor="periode_mulai"
@@ -396,21 +396,26 @@ function PilihSiswa({
                                     <div className="text-xs text-muted-foreground">
                                         NIS {s.id_siswa} · {s.program_keahlian}
                                     </div>
+                                    {diKelompokLain && (
+                                        <span
+                                            className={cn(
+                                                'mt-1.5 inline-flex max-w-full items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-semibold',
+                                                dipilih
+                                                    ? 'bg-gap-sedang-soft text-navy-900'
+                                                    : 'bg-navy-100/70 text-navy-600',
+                                            )}
+                                        >
+                                            {dipilih && (
+                                                <ArrowRightLeft className="size-3 shrink-0" />
+                                            )}
+                                            <span className="truncate">
+                                                {dipilih
+                                                    ? `Pindah dari ${s.kelompok_nama}`
+                                                    : s.kelompok_nama}
+                                            </span>
+                                        </span>
+                                    )}
                                 </div>
-                                {diKelompokLain && (
-                                    <span
-                                        className={cn(
-                                            'max-w-[45%] truncate rounded-full px-2 py-0.5 text-[11px] font-semibold',
-                                            dipilih
-                                                ? 'bg-gap-sedang-soft text-navy-900'
-                                                : 'bg-navy-100/70 text-navy-600',
-                                        )}
-                                        title={s.kelompok_nama ?? ''}
-                                    >
-                                        {dipilih ? 'Pindah dari ' : ''}
-                                        {s.kelompok_nama}
-                                    </span>
-                                )}
                             </label>
                         </li>
                     );

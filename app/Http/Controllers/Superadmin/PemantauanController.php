@@ -134,9 +134,8 @@ class PemantauanController extends Controller
      */
     private function opsiKelompok(): array
     {
-        return KelompokMagang::orderBy('nama_kelompok')->get(['id', 'nama_kelompok'])
+        return array_values(KelompokMagang::orderBy('nama_kelompok')->get(['id', 'nama_kelompok'])
             ->map(fn (KelompokMagang $k) => ['id' => $k->id, 'nama' => $k->nama_kelompok])
-            ->values()
-            ->all();
+            ->all());
     }
 }
