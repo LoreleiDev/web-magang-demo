@@ -1,0 +1,146 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+/*
+ * Design token MagangBridge SMK (CLAUDE.md bagian 12 & 15).
+ *
+ * Warna: biru tua (navy) sebagai warna dalam, biru muda & putih sebagai
+ * latar, hijau sebagai satu-satunya aksen. Merah & kuning HANYA untuk
+ * indikator gap/peringatan (token gap-*). Tanpa gradien warna.
+ *
+ * Radius: skala kelipatan 4px. Aturan konsentris: radius elemen di dalam
+ * = radius wadah - padding wadah. Contoh: card rounded-2xl (20px) dengan
+ * p-2 (8px) -> elemen di dalamnya rounded-lg (12px).
+ */
+
+@theme {
+    --font-sans:
+        'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif,
+        'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+        'Noto Color Emoji';
+
+    --color-navy-50: #eef4fb;
+    --color-navy-100: #dce8f6;
+    --color-navy-200: #b9cfea;
+    --color-navy-300: #8db0d9;
+    --color-navy-400: #5b88c0;
+    --color-navy-500: #3a67a3;
+    --color-navy-600: #284f86;
+    --color-navy-700: #1c3c6b;
+    --color-navy-800: #132d53;
+    --color-navy-900: #0b2545;
+    --color-navy-950: #061730;
+
+    --color-sky-tint: #f4f8fd;
+
+    --color-hijau-50: #e8f7f0;
+    --color-hijau-100: #c9ecdc;
+    --color-hijau-500: #12a170;
+    --color-hijau-600: #0d8a5f;
+    --color-hijau-700: #0a6e4c;
+
+    --color-gap-tinggi: #d63a3a;
+    --color-gap-tinggi-soft: #fcebeb;
+    --color-gap-sedang: #d99a06;
+    --color-gap-sedang-soft: #fdf4dc;
+    --color-gap-aman: #12a170;
+    --color-gap-aman-soft: #e8f7f0;
+
+    --radius-xs: 4px;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-2xl: 20px;
+    --radius-3xl: 28px;
+
+    /* Bayangan diberi warna navy, bukan hitam abu-abu. */
+    --shadow-xs: 0 1px 2px 0 rgb(11 37 69 / 0.06);
+    --shadow-sm:
+        0 1px 2px 0 rgb(11 37 69 / 0.06), 0 2px 6px -2px rgb(11 37 69 / 0.08);
+    --shadow-md:
+        0 1px 2px 0 rgb(11 37 69 / 0.05), 0 8px 20px -8px rgb(11 37 69 / 0.18);
+    --shadow-lg:
+        0 2px 4px 0 rgb(11 37 69 / 0.05), 0 18px 40px -16px rgb(11 37 69 / 0.28);
+    --shadow-hijau: 0 8px 20px -8px rgb(18 161 112 / 0.45);
+}
+
+:root {
+    --radius: 12px;
+
+    --background: var(--color-sky-tint);
+    --foreground: #0b1b30;
+    --card: #ffffff;
+    --card-foreground: #0b1b30;
+    --popover: #ffffff;
+    --popover-foreground: #0b1b30;
+    --primary: var(--color-navy-900);
+    --primary-foreground: #ffffff;
+    --secondary: var(--color-navy-50);
+    --secondary-foreground: var(--color-navy-900);
+    --muted: var(--color-navy-50);
+    --muted-foreground: #56677d;
+    --accent: var(--color-navy-50);
+    --accent-foreground: var(--color-navy-900);
+    --destructive: var(--color-gap-tinggi);
+    --border: #dbe5f0;
+    --input: #cfdbe8;
+    --ring: var(--color-navy-400);
+}
+
+@theme inline {
+    --color-background: var(--background);
+    --color-foreground: var(--foreground);
+    --color-card: var(--card);
+    --color-card-foreground: var(--card-foreground);
+    --color-popover: var(--popover);
+    --color-popover-foreground: var(--popover-foreground);
+    --color-primary: var(--primary);
+    --color-primary-foreground: var(--primary-foreground);
+    --color-secondary: var(--secondary);
+    --color-secondary-foreground: var(--secondary-foreground);
+    --color-muted: var(--muted);
+    --color-muted-foreground: var(--muted-foreground);
+    --color-accent: var(--accent);
+    --color-accent-foreground: var(--accent-foreground);
+    --color-destructive: var(--destructive);
+    --color-border: var(--border);
+    --color-input: var(--input);
+    --color-ring: var(--ring);
+}
+
+@layer base {
+    * {
+        @apply border-border outline-ring/50;
+    }
+
+    html {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: 'ss01';
+    }
+
+    button:not(:disabled),
+    [role='button']:not(:disabled) {
+        cursor: pointer;
+    }
+}
+
+/* Tekstur titik halus untuk area latar yang luas (bukan gradien warna). */
+@utility bg-texture-dots {
+    background-image: radial-gradient(
+        rgb(11 37 69 / 0.07) 1px,
+        transparent 1px
+    );
+    background-size: 18px 18px;
+}
+
+@utility pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+}

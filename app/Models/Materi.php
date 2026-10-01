@@ -1,0 +1,79 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Carbon;
+
+/**
+ * Materi umum per program keahlian (lewat kompetensinya), dibuat guru.
+ *
+ * @property int $id
+ * @property int $kompetensi_id
+ * @property string $judul
+ * @property int $dibuat_oleh
+ * @property Carbon|null $diubah_terakhir
+ * @property bool $terverifikasi_industri
+ * @property-read Kompetensi $kompetensi
+ * @property-read User $pembuat
+ */
+#[Table('materi')]
+#[Fillable(['kompetensi_id', 'judul', 'dibuat_oleh', 'diubah_terakhir', 'terverifikasi_industri'])]
+class Materi extends Model
+{
+    /**
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'diubah_terakhir' => 'datetime',
+            'terverifikasi_industri' => 'boolean',
+        ];
+    }
+
+    /**
+     * @return BelongsTo<Kompetensi, $this>
+     */
+    public function kompetensi(): BelongsTo
+    {
+        return $this->belongsTo(Kompetensi::class);
+    }
+
+    /**
+     * @return BelongsTo<User, $this>
+     */
+    public function pembuat(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'dibuat_oleh');
+    }
+
+    /**
+     * @return HasMany<LangkahMateri, $this>
+     */
+    public function langkah(): HasMany
+    {
+        return $this->hasMany(LangkahMateri::class)->orderBy('urutan');
+    }
+
+    /**
+     * @return HasOne<Kuis, $this>
+     */
+    public function kuis(): HasOne
+    {
+        return $this->hasOne(Kuis::class);
+    }
+
+    /**
+     * @return HasMany<VerifikasiMateri, $this>
+     */
+    public function verifikasi(): HasMany
+    {
+        return $this->hasMany(VerifikasiMateri::class);
+    }
+}
