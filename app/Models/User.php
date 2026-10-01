@@ -138,6 +138,27 @@ class User extends Authenticatable
     }
 
     /**
+     * Program keahlian siswa yang magang di perusahaan akun industri ini.
+     * Menentukan materi yang boleh dilihat & diverifikasi industri.
+     *
+     * @return list<string>
+     */
+    public function programKeahlianSiswaPerusahaan(): array
+    {
+        $perusahaanId = $this->perusahaanId();
+
+        if (! $this->hasRole(Role::Industri) || $perusahaanId === null) {
+            return [];
+        }
+
+        return ProfilSiswa::query()
+            ->whereHas('kelompok', fn (Builder $q) => $q->where('perusahaan_id', $perusahaanId))
+            ->distinct()
+            ->pluck('program_keahlian')
+            ->all();
+    }
+
+    /**
      * Siswa yang boleh dilihat oleh $viewer (CLAUDE.md bagian 2.1, baris "Lihat daftar siswa").
      *
      * @param  Builder<User>  $query
