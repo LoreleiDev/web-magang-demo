@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Database\Factories\PerusahaanFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -18,6 +20,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['nama', 'alamat', 'bidang_usaha', 'daftar_unit_kerja'])]
 class Perusahaan extends Model
 {
+    /** @use HasFactory<PerusahaanFactory> */
+    use HasFactory;
+
     /**
      * @return array<string, string>
      */

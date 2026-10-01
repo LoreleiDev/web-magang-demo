@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Database\Factories\KelompokMagangFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -24,6 +26,9 @@ use Illuminate\Support\Carbon;
 #[Fillable(['nama_kelompok', 'perusahaan_id', 'guru_pembimbing_id', 'periode_mulai', 'periode_selesai'])]
 class KelompokMagang extends Model
 {
+    /** @use HasFactory<KelompokMagangFactory> */
+    use HasFactory;
+
     /**
      * @return array<string, string>
      */

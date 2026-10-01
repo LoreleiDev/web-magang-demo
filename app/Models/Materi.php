@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Database\Factories\MateriFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -26,6 +28,9 @@ use Illuminate\Support\Carbon;
 #[Fillable(['kompetensi_id', 'judul', 'dibuat_oleh', 'diubah_terakhir', 'terverifikasi_industri'])]
 class Materi extends Model
 {
+    /** @use HasFactory<MateriFactory> */
+    use HasFactory;
+
     /**
      * @return array<string, string>
      */

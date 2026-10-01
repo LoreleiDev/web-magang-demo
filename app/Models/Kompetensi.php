@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Database\Factories\KompetensiFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -23,6 +25,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 #[Fillable(['program_keahlian', 'nama_kompetensi_sekolah', 'aktivitas_kompetensi_industri', 'target_level', 'dibuat_oleh'])]
 class Kompetensi extends Model
 {
+    /** @use HasFactory<KompetensiFactory> */
+    use HasFactory;
+
     /**
      * @return array<string, string>
      */
