@@ -11,6 +11,7 @@ declare module '@inertiajs/core' {
         sharedPageProps: {
             name: string;
             auth: Auth;
+            programKeahlian: Record<string, string>;
             [key: string]: unknown;
         };
         flashDataType: {

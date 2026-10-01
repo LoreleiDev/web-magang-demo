@@ -1,5 +1,13 @@
 import type { LucideIcon } from 'lucide-react';
-import { LayoutDashboard } from 'lucide-react';
+import {
+    BookOpen,
+    Building2,
+    ClipboardCheck,
+    LayoutDashboard,
+    NotebookPen,
+    Users,
+    UsersRound,
+} from 'lucide-react';
 import guru from '@/routes/guru';
 import industri from '@/routes/industri';
 import siswa from '@/routes/siswa';
@@ -28,6 +36,36 @@ export function navigasiUntuk(role: Role): NavItem[] {
                     href: superadmin.dashboard().url,
                     icon: LayoutDashboard,
                     exact: true,
+                },
+                {
+                    title: 'Akun',
+                    href: superadmin.akun.index().url,
+                    icon: Users,
+                },
+                {
+                    title: 'Perusahaan',
+                    href: superadmin.perusahaan.index().url,
+                    icon: Building2,
+                },
+                {
+                    title: 'Kelompok Magang',
+                    href: superadmin.kelompok.index().url,
+                    icon: UsersRound,
+                },
+                {
+                    title: 'Materi',
+                    href: superadmin.materi.index().url,
+                    icon: BookOpen,
+                },
+                {
+                    title: 'Logbook',
+                    href: superadmin.logbook.index().url,
+                    icon: NotebookPen,
+                },
+                {
+                    title: 'Assessment',
+                    href: superadmin.assessment.index().url,
+                    icon: ClipboardCheck,
                 },
             ];
         case 'guru':
