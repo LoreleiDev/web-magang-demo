@@ -24,7 +24,7 @@ export function MateriBaca({ materi }: { materi: MateriDetail }) {
                         </h3>
                     </div>
 
-                    <div className="space-y-4 rounded-[20px] bg-navy-50/60 p-4 sm:p-5">
+                    <div className="space-y-4 rounded-2xl bg-navy-50/60 p-4 sm:p-5">
                         {langkah.konten_teks ? (
                             <p className="text-[15px] leading-relaxed whitespace-pre-line text-navy-900">
                                 {langkah.konten_teks}
@@ -36,7 +36,13 @@ export function MateriBaca({ materi }: { materi: MateriDetail }) {
                         )}
 
                         {langkah.media.length > 0 && (
-                            <div className="grid gap-3 lg:grid-cols-2">
+                            <div
+                                className={cn(
+                                    'grid gap-3',
+                                    langkah.media.length > 1 &&
+                                        'lg:grid-cols-2',
+                                )}
+                            >
                                 {langkah.media.map((media, i) => (
                                     <MediaEmbed key={i} media={media} />
                                 ))}

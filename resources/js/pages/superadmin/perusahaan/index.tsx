@@ -113,7 +113,7 @@ function KartuPerusahaan({ perusahaan: p }: { perusahaan: Perusahaan }) {
                 </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-[20px] bg-navy-50/70 px-4 py-3">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-2xl bg-navy-50/70 px-4 py-3">
                 <Hitung
                     icon={UsersRound}
                     nilai={p.jumlah_kelompok}

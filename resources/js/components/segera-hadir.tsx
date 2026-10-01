@@ -15,7 +15,7 @@ export function SegeraHadir({
 }) {
     return (
         <section className="rounded-3xl border bg-card p-2 shadow-sm">
-            <div className="rounded-[20px] bg-navy-50/70 p-5 sm:p-7">
+            <div className="rounded-2xl bg-navy-50/70 p-5 sm:p-7">
                 <div className="flex items-start gap-4">
                     <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-navy-900 text-white shadow-md">
                         <Icon className="size-5" />
