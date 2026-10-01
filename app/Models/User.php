@@ -151,11 +151,12 @@ class User extends Authenticatable
             return [];
         }
 
-        return ProfilSiswa::query()
+        return array_values(ProfilSiswa::query()
             ->whereHas('kelompok', fn (Builder $q) => $q->where('perusahaan_id', $perusahaanId))
             ->distinct()
-            ->pluck('program_keahlian')
-            ->all();
+            ->get(['program_keahlian'])
+            ->map(fn (ProfilSiswa $profil) => $profil->program_keahlian)
+            ->all());
     }
 
     /**

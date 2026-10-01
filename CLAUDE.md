@@ -13,6 +13,7 @@ MagangBridge SMK adalah website pendamping siswa SMK selama Praktik Kerja Lapang
 (PKL/magang) di industri.
 
 Masalah yang diselesaikan: kesenjangan (learning gap) antara
+
 1. pengetahuan dan keterampilan yang dipelajari siswa di sekolah, dan
 2. pengetahuan, keterampilan, peralatan, prosedur, dan budaya kerja di industri.
 
@@ -21,17 +22,17 @@ Website membantu siswa **mengidentifikasi gap kompetensi** dan memberikan
 
 ### 1.1 Tech Stack
 
-| Bagian | Teknologi |
-|---|---|
-| Backend | Laravel |
-| Penghubung frontend–backend | Inertia.js |
-| Frontend | React |
-| Styling | Tailwind CSS |
-| Komponen UI | shadcn/ui |
-| Ikon | Lucide React (bawaan shadcn/ui, jangan campur dengan library ikon lain) |
-| Database | MySQL (konfigurasi koneksi dari `.env`) |
-| Provider AI | Google Gemini (API key di `.env`, misal `GEMINI_API_KEY`) |
-| Email notifikasi | Laravel Mail via SMTP (konfigurasi `MAIL_*` di `.env`), dikirim lewat queue |
+| Bagian                      | Teknologi                                                                   |
+| --------------------------- | --------------------------------------------------------------------------- |
+| Backend                     | Laravel                                                                     |
+| Penghubung frontend–backend | Inertia.js                                                                  |
+| Frontend                    | React                                                                       |
+| Styling                     | Tailwind CSS                                                                |
+| Komponen UI                 | shadcn/ui                                                                   |
+| Ikon                        | Lucide React (bawaan shadcn/ui, jangan campur dengan library ikon lain)     |
+| Database                    | MySQL (konfigurasi koneksi dari `.env`)                                     |
+| Provider AI                 | Google Gemini (API key di `.env`, misal `GEMINI_API_KEY`)                   |
+| Email notifikasi            | Laravel Mail via SMTP (konfigurasi `MAIL_*` di `.env`), dikirim lewat queue |
 
 ---
 
@@ -39,31 +40,31 @@ Website membantu siswa **mengidentifikasi gap kompetensi** dan memberikan
 
 Ada 4 role. Semua akun dibuat oleh Superadmin (tidak ada registrasi mandiri).
 
-| Role | Ringkasan tugas |
-|---|---|
-| `superadmin` | Membuat akun guru, siswa, dan industri; mengelola data perusahaan beserta dokumen industrinya; membuat kelompok magang dan menetapkan guru pembimbing serta siswa ke kelompok. |
-| `guru` | Melihat siswa di kelompok magang yang ia bimbing (bisa lebih dari satu kelompok); input dan edit kompetensi; mengisi level kompetensi siswa; input dan edit materi; mengunggah dokumen sekolah; memantau progress, logbook, assessment. |
-| `industri` | Melihat siswa yang terdaftar magang di perusahaannya; memantau progress dan logbook; **memverifikasi kompetensi**; **memverifikasi materi dan memberi masukan** kepada guru pembuat materi. |
-| `siswa` | Mengikuti pendampingan magang: dashboard, peta kompetensi, learning gap, belajar, AI Mentor, logbook, assessment, progress. |
+| Role         | Ringkasan tugas                                                                                                                                                                                                                         |
+| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `superadmin` | Membuat akun guru, siswa, dan industri; mengelola data perusahaan beserta dokumen industrinya; membuat kelompok magang dan menetapkan guru pembimbing serta siswa ke kelompok.                                                          |
+| `guru`       | Melihat siswa di kelompok magang yang ia bimbing (bisa lebih dari satu kelompok); input dan edit kompetensi; mengisi level kompetensi siswa; input dan edit materi; mengunggah dokumen sekolah; memantau progress, logbook, assessment. |
+| `industri`   | Melihat siswa yang terdaftar magang di perusahaannya; memantau progress dan logbook; **memverifikasi kompetensi**; **memverifikasi materi dan memberi masukan** kepada guru pembuat materi.                                             |
+| `siswa`      | Mengikuti pendampingan magang: dashboard, peta kompetensi, learning gap, belajar, AI Mentor, logbook, assessment, progress.                                                                                                             |
 
 ### 2.1 Matriks Hak Akses
 
-| Fitur | Superadmin | Guru | Industri | Siswa |
-|---|---|---|---|---|
-| Buat/edit/nonaktifkan akun guru, siswa, industri | ✅ | ❌ | ❌ | ❌ |
-| Kelola data perusahaan | ✅ | ❌ | ❌ | ❌ |
-| Unggah dokumen industri (knowledge base) | ✅ | ❌ | ❌ | ❌ |
-| Buat kelompok magang, tetapkan guru & siswa | ✅ | ❌ | ❌ | ❌ |
-| Lihat daftar siswa | Semua | Hanya kelompok yang ia bimbing | Hanya siswa di perusahaannya | Diri sendiri |
-| Input & edit kompetensi | ❌ | ✅ | ❌ | ❌ |
-| Isi level kompetensi siswa (1–4) | ❌ | ✅ Kelompoknya | ❌ | ❌ |
-| Input & edit materi | ❌ | ✅ | ❌ | ❌ |
-| Lihat materi | ✅ | ✅ | ✅ Program keahlian siswa di perusahaannya | ✅ Program keahliannya |
-| Verifikasi materi & beri masukan | ❌ | ❌ | ✅ Program keahlian siswa di perusahaannya | ❌ |
-| Unggah dokumen sekolah (knowledge base) | ❌ | ✅ | ❌ | ❌ |
-| Lihat logbook & assessment siswa | ✅ | Kelompoknya | Perusahaannya | Miliknya |
-| Verifikasi kompetensi | ❌ | ❌ | ✅ Perusahaannya | ❌ |
-| Gunakan AI Mentor | ❌ | ❌ | ❌ | ✅ |
+| Fitur                                            | Superadmin | Guru                           | Industri                                   | Siswa                  |
+| ------------------------------------------------ | ---------- | ------------------------------ | ------------------------------------------ | ---------------------- |
+| Buat/edit/nonaktifkan akun guru, siswa, industri | ✅         | ❌                             | ❌                                         | ❌                     |
+| Kelola data perusahaan                           | ✅         | ❌                             | ❌                                         | ❌                     |
+| Unggah dokumen industri (knowledge base)         | ✅         | ❌                             | ❌                                         | ❌                     |
+| Buat kelompok magang, tetapkan guru & siswa      | ✅         | ❌                             | ❌                                         | ❌                     |
+| Lihat daftar siswa                               | Semua      | Hanya kelompok yang ia bimbing | Hanya siswa di perusahaannya               | Diri sendiri           |
+| Input & edit kompetensi                          | ❌         | ✅                             | ❌                                         | ❌                     |
+| Isi level kompetensi siswa (1–4)                 | ❌         | ✅ Kelompoknya                 | ❌                                         | ❌                     |
+| Input & edit materi                              | ❌         | ✅                             | ❌                                         | ❌                     |
+| Lihat materi                                     | ✅         | ✅                             | ✅ Program keahlian siswa di perusahaannya | ✅ Program keahliannya |
+| Verifikasi materi & beri masukan                 | ❌         | ❌                             | ✅ Program keahlian siswa di perusahaannya | ❌                     |
+| Unggah dokumen sekolah (knowledge base)          | ❌         | ✅                             | ❌                                         | ❌                     |
+| Lihat logbook & assessment siswa                 | ✅         | Kelompoknya                    | Perusahaannya                              | Miliknya               |
+| Verifikasi kompetensi                            | ❌         | ❌                             | ✅ Perusahaannya                           | ❌                     |
+| Gunakan AI Mentor                                | ❌         | ❌                             | ❌                                         | ✅                     |
 
 **Aturan penting:** pembatasan data di atas WAJIB ditegakkan di sisi backend
 (Laravel Policy/Gate/Middleware), bukan hanya disembunyikan di tampilan.
@@ -151,16 +152,17 @@ ChatAIMentor
 - Login memakai **email + password** yang dibuat Superadmin. "Membuatkan email"
   berarti membuat **akun login berbasis email**, bukan membuat kotak surat email baru.
 - Setelah login, user diarahkan sesuai role:
-  - `superadmin` → Panel Superadmin
-  - `guru` → Dashboard Guru
-  - `industri` → Dashboard Industri
-  - `siswa` → alur siswa (di bawah)
+    - `superadmin` → Panel Superadmin
+    - `guru` → Dashboard Guru
+    - `industri` → Dashboard Industri
+    - `siswa` → alur siswa (di bawah)
 
 ### 4.1 Halaman Awal Siswa (Mulai Pendampingan)
 
 Tampilan seperti portal pembelajaran. Muncul setelah siswa login.
 
 Form pendampingan siswa berisi:
+
 - Nama siswa → terisi otomatis dari akun, terkunci
 - ID siswa → terisi otomatis dari akun, terkunci
 - Program keahlian → terisi otomatis dari akun, terkunci
@@ -179,14 +181,17 @@ bahwa siswa belum terdaftar di kelompok magang dan diminta menghubungi sekolah.
 ## 5. Panel Superadmin
 
 ### 5.1 Manajemen Akun
+
 - Buat akun **guru**, **siswa**, dan **industri** (nama, email, password awal, role).
 - Akun industri wajib dihubungkan ke satu **Perusahaan**.
 - Edit dan nonaktifkan akun.
 
 ### 5.4 Pemantauan (baca-saja)
+
 - Lihat materi, logbook, dan hasil assessment seluruh siswa (keputusan 13 no. 17).
 
 ### 5.2 Data Perusahaan & Dokumen Industri
+
 - Tambah, edit, hapus perusahaan (nama, alamat, bidang usaha, unit kerja).
 - Saat mendaftarkan perusahaan, superadmin **mengunggah dokumen industri**
   (misal SOP, panduan kerja) yang menjadi knowledge base AI Mentor untuk
@@ -195,6 +200,7 @@ bahwa siswa belum terdaftar di kelompok magang dan diminta menghubungi sekolah.
 - Data perusahaan menjadi sumber nama industri dan unit kerja di halaman siswa.
 
 ### 5.3 Kelompok Magang
+
 - Buat kelompok magang sesuai **proposal siswa**.
 - Tetapkan: perusahaan tujuan, periode magang, satu guru pembimbing, dan daftar siswa.
 - Satu guru dapat dimasukkan ke lebih dari satu kelompok.
@@ -209,6 +215,7 @@ Dashboard · Peta Kompetensi · Learning Gap · Belajar · AI Mentor · Logbook 
 Assessment · Progress
 
 ### 6.1 Dashboard
+
 - Hari ke-berapa pelaksanaan magang (dihitung dari `periode_mulai` kelompok)
 - Persentase progres
 - Jumlah kompetensi yang sudah dikuasai
@@ -218,31 +225,36 @@ Assessment · Progress
 - Logbook terakhir
 
 ### 6.2 Peta Kompetensi
+
 Tabel perbandingan: **Kompetensi sekolah** vs **Aktivitas/kompetensi industri**.
 Kompetensi diinput guru; level siswa diisi guru (bagian 7).
 
 Level:
-| Level | Arti |
-|---|---|
-| 1 | Belum mampu |
-| 2 | Mampu dengan bimbingan |
-| 3 | Mampu mandiri |
-| 4 | Mampu mandiri sesuai standar industri |
+
+| Level | Arti                                  |
+| ----- | ------------------------------------- |
+| 1     | Belum mampu                           |
+| 2     | Mampu dengan bimbingan                |
+| 3     | Mampu mandiri                         |
+| 4     | Mampu mandiri sesuai standar industri |
 
 Warna (gap = target_level − level_siswa):
-| Warna | Arti | Aturan |
-|---|---|---|
-| Merah | Gap tinggi | gap ≥ 2 |
+
+| Warna  | Arti            | Aturan  |
+| ------ | --------------- | ------- |
+| Merah  | Gap tinggi      | gap ≥ 2 |
 | Kuning | Perlu penguatan | gap = 1 |
-| Hijau | Sesuai target | gap ≤ 0 |
+| Hijau  | Sesuai target   | gap ≤ 0 |
 
 Di smartphone, tabel ditampilkan sebagai daftar card agar tidak perlu scroll ke samping.
 
 ### 6.3 Learning Gap
+
 Judul: **"Kompetensi yang perlu Anda tingkatkan"** (otomatis dari data gap > 0,
 diurutkan dari gap terbesar).
 
 Setiap card berisi:
+
 - Nama kompetensi
 - Level siswa
 - Target industri
@@ -251,6 +263,7 @@ Setiap card berisi:
 - Tombol **"Tanya AI Mentor"** → membuka chatbot dengan konteks kompetensi tsb
 
 ### 6.4 Belajar (Microlearning)
+
 Alur 8 langkah per materi:
 
 Konsep Dasar → Contoh Industri → Media/Video → Studi Kasus → Latihan → Kuis →
@@ -267,13 +280,14 @@ materi). Jika belum atau tidak diverifikasi, **tidak ada badge**. Lihat bagian 1
 
 Guru tidak mengunggah file media. Semua media dimasukkan sebagai **link**:
 
-| Jenis | Input dari guru | Cara ditampilkan |
-|---|---|---|
-| Video | Link YouTube (`youtube.com/watch?v=…`, `youtu.be/…`, `youtube.com/shorts/…`) | Ubah otomatis menjadi URL embed lalu tampilkan sebagai **iframe** responsif (rasio 16:9) |
-| Gambar | Link Google Drive | Tampilkan sebagai iframe pratinjau Drive (`drive.google.com/file/d/{ID}/preview`) + tombol "Buka di Google Drive" |
-| Dokumen | Link Google Drive (PDF, Docs, Slides, dll.) | Tampilkan sebagai iframe pratinjau Drive + tombol "Buka di Google Drive" |
+| Jenis   | Input dari guru                                                              | Cara ditampilkan                                                                                                  |
+| ------- | ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Video   | Link YouTube (`youtube.com/watch?v=…`, `youtu.be/…`, `youtube.com/shorts/…`) | Ubah otomatis menjadi URL embed lalu tampilkan sebagai **iframe** responsif (rasio 16:9)                          |
+| Gambar  | Link Google Drive                                                            | Tampilkan sebagai iframe pratinjau Drive (`drive.google.com/file/d/{ID}/preview`) + tombol "Buka di Google Drive" |
+| Dokumen | Link Google Drive (PDF, Docs, Slides, dll.)                                  | Tampilkan sebagai iframe pratinjau Drive + tombol "Buka di Google Drive"                                          |
 
 Aturan:
+
 - Validasi link di backend: video hanya menerima domain YouTube, gambar dan
   dokumen hanya menerima domain Google Drive/Google Docs. Tolak link lain dengan
   pesan error yang jelas.
@@ -285,11 +299,14 @@ Aturan:
 - Tampilkan pratinjau media di form guru sebelum materi disimpan.
 
 ### 6.5 AI Mentor
+
 Floating chatbot di **kanan bawah**, tersedia di semua halaman siswa.
 Detail lengkap di bagian 9.
 
 ### 6.6 Logbook
+
 Form harian:
+
 - Tanggal
 - Aktivitas hari ini
 - Peralatan/software yang digunakan
@@ -301,6 +318,7 @@ Form harian:
 - Upload bukti kegiatan (opsional)
 
 Tombol: **"Analisis dengan AI"** → hasil (lihat bagian 9.5):
+
 - Kompetensi yang digunakan
 - Kompetensi baru yang ditemukan
 - Kemungkinan learning gap
@@ -308,12 +326,15 @@ Tombol: **"Analisis dengan AI"** → hasil (lihat bagian 9.5):
 - Pertanyaan refleksi
 
 ### 6.7 Assessment
+
 - Kuis interaktif setiap selesai materi.
 - Tampilkan skor.
 - Jika skor **< 75%** → tampilkan rekomendasi penguatan materi terkait.
 
 ### 6.8 Progress
+
 Gunakan grafik dan progress bar:
+
 - Overall progress
 - Competency progress
 - Learning gap yang sudah diselesaikan
@@ -327,12 +348,12 @@ Gunakan grafik dan progress bar:
 
 - Pilih kelompok magang (dropdown/tab) — guru hanya melihat kelompok yang ia bimbing.
 - Daftar siswa dalam kelompok terpilih, beserta:
-  - progress
-  - learning gap
-  - aktivitas terakhir
-  - logbook
-  - hasil assessment
-  - status verifikasi kompetensi (hanya dilihat, verifikasi dilakukan industri)
+    - progress
+    - learning gap
+    - aktivitas terakhir
+    - logbook
+    - hasil assessment
+    - status verifikasi kompetensi (hanya dilihat, verifikasi dilakukan industri)
 - **Isi Level Kompetensi:** guru mengisi/mengubah `level_siswa` (1–4) per
   kompetensi untuk siswa di kelompoknya.
 - **Manajemen Kompetensi:** tambah dan edit kompetensi (kompetensi sekolah,
@@ -359,20 +380,22 @@ Gunakan grafik dan progress bar:
 ## 9. AI Mentor Magang
 
 ### 9.1 Tampilan
+
 - Judul: **"AI Mentor Magang"**
 - Pesan pembuka:
-  > Halo, saya AI Mentor Magang. Saya dapat membantu menghubungkan apa yang Anda
-  > pelajari di sekolah dengan aktivitas yang Anda temui di industri. Apa yang
-  > sedang Anda kerjakan hari ini?
+    > Halo, saya AI Mentor Magang. Saya dapat membantu menghubungkan apa yang Anda
+    > pelajari di sekolah dengan aktivitas yang Anda temui di industri. Apa yang
+    > sedang Anda kerjakan hari ini?
 - Quick prompts:
-  - "Saya tidak memahami pekerjaan ini"
-  - "Hubungkan pekerjaan saya dengan materi sekolah"
-  - "Jelaskan istilah industri"
-  - "Saya mengalami kesulitan"
-  - "Bantu saya membuat refleksi"
-  - "Rekomendasikan materi yang harus saya pelajari"
+    - "Saya tidak memahami pekerjaan ini"
+    - "Hubungkan pekerjaan saya dengan materi sekolah"
+    - "Jelaskan istilah industri"
+    - "Saya mengalami kesulitan"
+    - "Bantu saya membuat refleksi"
+    - "Rekomendasikan materi yang harus saya pelajari"
 
 ### 9.2 Arsitektur Integrasi AI
+
 - Provider: **Google Gemini**, **dipanggil dari backend Laravel saja**.
   API key TIDAK BOLEH berada di kode frontend/React maupun di repository.
 - Alur: React → route Laravel (misal `POST /mentor/chat`) → backend menyusun
@@ -382,14 +405,16 @@ Gunakan grafik dan progress bar:
   (misal `App\Services\AiMentorService`) agar tidak tersebar di controller.
 
 ### 9.3 Knowledge Base (Dokumen Sekolah & Industri)
+
 Jawaban AI harus memprioritaskan dokumen yang diunggah. Gunakan pola
 **RAG (Retrieval-Augmented Generation)** dengan fitur file/file search
 dari Gemini API (cek dokumentasi Gemini terbaru untuk cara pemakaiannya):
+
 1. Dokumen diunggah lewat website → backend meneruskannya ke Gemini dan
    menyimpan id-nya di `DokumenKnowledgeBase.id_di_layanan_ai`.
 2. Dokumen dikelompokkan per cakupan:
-   - **Dokumen sekolah** → diunggah guru, per program keahlian
-   - **Dokumen industri** → diunggah superadmin, per perusahaan
+    - **Dokumen sekolah** → diunggah guru, per program keahlian
+    - **Dokumen industri** → diunggah superadmin, per perusahaan
 3. Saat siswa bertanya, backend hanya memakai dokumen yang sesuai dengan
    **program keahlian** dan **perusahaan** siswa tersebut. Dokumen perusahaan A
    tidak boleh terpakai untuk siswa di perusahaan B.
@@ -495,12 +520,12 @@ Tampilkan sebagai status indicator / badge berwarna.
 
 Perpindahan status berjalan **otomatis** (keputusan 13 no. 13):
 
-| Dari → Ke | Pemicu |
-|---|---|
-| Belum dipelajari → Sedang dipelajari | Siswa membuka materi kompetensi tsb |
-| → Sedang dipraktikkan | Siswa lulus kuis materi kompetensi tsb (skor ≥ 75) |
-| → Menunggu verifikasi | Guru mengisi `level_siswa` ≥ `target_level` |
-| → Terverifikasi | Industri menekan "Verifikasi Kompetensi" |
+| Dari → Ke                            | Pemicu                                             |
+| ------------------------------------ | -------------------------------------------------- |
+| Belum dipelajari → Sedang dipelajari | Siswa membuka materi kompetensi tsb                |
+| → Sedang dipraktikkan                | Siswa lulus kuis materi kompetensi tsb (skor ≥ 75) |
+| → Menunggu verifikasi                | Guru mengisi `level_siswa` ≥ `target_level`        |
+| → Terverifikasi                      | Industri menekan "Verifikasi Kompetensi"           |
 
 Status tidak pernah mundur otomatis, kecuali "Menunggu verifikasi" kembali ke
 "Sedang dipraktikkan" jika guru menurunkan level di bawah target sebelum
@@ -520,25 +545,29 @@ diverifikasi.
 ### 11.2 Verifikasi Materi oleh Industri
 
 Alur:
+
 1. Industri membuka materi dari menu **Verifikasi Materi** (bagian 8).
 2. Industri memilih salah satu:
-   - **"Verifikasi Materi"** → kolom masukan opsional.
-   - **"Belum Sesuai"** → kolom masukan **wajib** diisi.
+    - **"Verifikasi Materi"** → kolom masukan opsional.
+    - **"Belum Sesuai"** → kolom masukan **wajib** diisi.
 3. Sistem menyimpan hasil ke `VerifikasiMateri`.
 4. Sistem mengirim **email ke guru pembuat materi** (`Materi.dibuat_oleh`).
 
 Isi email:
+
 - Subjek: `[MagangBridge] Masukan untuk materi "{judul_materi}"`
 - Judul materi, nama perusahaan dan nama pemeriksa, hasil
   (Diverifikasi / Belum Sesuai), dan **isi masukan dari industri**.
 - Link ke halaman edit materi tersebut.
 
 Badge:
+
 - Hasil "Diverifikasi" → `terverifikasi_industri = true` → badge
   **"Diverifikasi oleh industri"** tampil.
 - Belum diperiksa atau hasil "Belum Sesuai" → tidak ada badge.
 
 Teknis:
+
 - Kirim email lewat queue Laravel agar halaman industri tidak menunggu.
 - Jika email gagal terkirim, verifikasi tetap tersimpan; catat di
   `email_terkirim = false`.
@@ -563,31 +592,31 @@ Teknis:
 
 ## 13. Keputusan Proyek
 
-| No | Topik | Keputusan |
-|---|---|---|
-| 1 | Tech stack | Laravel, Inertia.js, React, Tailwind CSS, shadcn/ui, Lucide React, MySQL (sesuai `.env`) |
-| 2 | Provider AI | Google Gemini |
-| 3 | Industri siswa | Otomatis terpilih dari kelompok magang yang ditetapkan Superadmin |
-| 4 | Verifikasi kompetensi | Hanya pembimbing industri |
-| 5 | Input data kompetensi | Hanya guru |
-| 6 | Pengisi level kompetensi siswa | Guru pembimbing |
-| 7 | Dokumen knowledge base sekolah | Diunggah guru |
-| 8 | Dokumen knowledge base industri | Diunggah superadmin saat mendaftarkan perusahaan |
-| 9 | Guru per kelompok | Satu kelompok hanya satu guru; satu guru boleh membimbing lebih dari satu kelompok |
-| 10 | Cakupan materi | Umum (per program keahlian), bukan per kelompok |
-| 11 | Verifikasi materi | Oleh industri; hasil dan masukan dikirim via email ke guru pembuat materi; badge "Diverifikasi oleh industri" jika diverifikasi |
-| 12 | Media materi | Hanya link: YouTube ditampilkan sebagai iframe, gambar & dokumen memakai link Google Drive |
-| 13 | Perpindahan status kompetensi | Otomatis, sesuai tabel di bagian 10 |
-| 14 | Syarat verifikasi kompetensi | Tombol "Verifikasi Kompetensi" hanya aktif saat status "Menunggu verifikasi"; industri tidak dapat membatalkan verifikasi |
-| 15 | Program keahlian | Daftar tetap di `config/magang.php` (bukan teks bebas), dipakai di semua form dan pembatasan data |
-| 16 | Hak edit kompetensi & materi | Guru hanya menambah/mengedit untuk program keahliannya sendiri (`ProfilGuru.program_keahlian`); belum ada fitur hapus |
-| 17 | Superadmin melihat materi, logbook, assessment | Halaman baca-saja (read-only) di Panel Superadmin |
-| 18 | Halaman Mulai Pendampingan | Hanya tampil sampai siswa memilih unit kerja; setelah itu login langsung ke Dashboard |
-| 19 | Persentase progres siswa | Persentase kompetensi (program keahlian siswa) yang `level_siswa` ≥ `target_level` |
-| 20 | "Aktivitas yang harus dilakukan hari ini" | Otomatis: isi logbook hari ini jika belum; lanjutkan materi untuk gap terbesar; ulangi kuis yang skornya < 75 |
-| 21 | Logbook | Satu logbook per tanggal per siswa, dapat diedit; bukti kegiatan berupa gambar/PDF maks. 5 MB |
-| 22 | Kuis | Boleh diulang; semua percobaan disimpan; skor yang ditampilkan adalah skor terbaik |
-| 23 | Autentikasi | Starter kit React "blank" + login buatan sendiri (email + password, rate limit); tanpa registrasi, reset password, atau 2FA |
+| No  | Topik                                          | Keputusan                                                                                                                       |
+| --- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Tech stack                                     | Laravel, Inertia.js, React, Tailwind CSS, shadcn/ui, Lucide React, MySQL (sesuai `.env`)                                        |
+| 2   | Provider AI                                    | Google Gemini                                                                                                                   |
+| 3   | Industri siswa                                 | Otomatis terpilih dari kelompok magang yang ditetapkan Superadmin                                                               |
+| 4   | Verifikasi kompetensi                          | Hanya pembimbing industri                                                                                                       |
+| 5   | Input data kompetensi                          | Hanya guru                                                                                                                      |
+| 6   | Pengisi level kompetensi siswa                 | Guru pembimbing                                                                                                                 |
+| 7   | Dokumen knowledge base sekolah                 | Diunggah guru                                                                                                                   |
+| 8   | Dokumen knowledge base industri                | Diunggah superadmin saat mendaftarkan perusahaan                                                                                |
+| 9   | Guru per kelompok                              | Satu kelompok hanya satu guru; satu guru boleh membimbing lebih dari satu kelompok                                              |
+| 10  | Cakupan materi                                 | Umum (per program keahlian), bukan per kelompok                                                                                 |
+| 11  | Verifikasi materi                              | Oleh industri; hasil dan masukan dikirim via email ke guru pembuat materi; badge "Diverifikasi oleh industri" jika diverifikasi |
+| 12  | Media materi                                   | Hanya link: YouTube ditampilkan sebagai iframe, gambar & dokumen memakai link Google Drive                                      |
+| 13  | Perpindahan status kompetensi                  | Otomatis, sesuai tabel di bagian 10                                                                                             |
+| 14  | Syarat verifikasi kompetensi                   | Tombol "Verifikasi Kompetensi" hanya aktif saat status "Menunggu verifikasi"; industri tidak dapat membatalkan verifikasi       |
+| 15  | Program keahlian                               | Daftar tetap di `config/magang.php` (bukan teks bebas), dipakai di semua form dan pembatasan data                               |
+| 16  | Hak edit kompetensi & materi                   | Guru hanya menambah/mengedit untuk program keahliannya sendiri (`ProfilGuru.program_keahlian`); belum ada fitur hapus           |
+| 17  | Superadmin melihat materi, logbook, assessment | Halaman baca-saja (read-only) di Panel Superadmin                                                                               |
+| 18  | Halaman Mulai Pendampingan                     | Hanya tampil sampai siswa memilih unit kerja; setelah itu login langsung ke Dashboard                                           |
+| 19  | Persentase progres siswa                       | Persentase kompetensi (program keahlian siswa) yang `level_siswa` ≥ `target_level`                                              |
+| 20  | "Aktivitas yang harus dilakukan hari ini"      | Otomatis: isi logbook hari ini jika belum; lanjutkan materi untuk gap terbesar; ulangi kuis yang skornya < 75                   |
+| 21  | Logbook                                        | Satu logbook per tanggal per siswa, dapat diedit; bukti kegiatan berupa gambar/PDF maks. 5 MB                                   |
+| 22  | Kuis                                           | Boleh diulang; semua percobaan disimpan; skor yang ditampilkan adalah skor terbaik                                              |
+| 23  | Autentikasi                                    | Starter kit React "blank" + login buatan sendiri (email + password, rate limit); tanpa registrasi, reset password, atau 2FA     |
 
 ### 13.1 Belum Ditentukan
 

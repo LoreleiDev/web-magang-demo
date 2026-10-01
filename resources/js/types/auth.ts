@@ -1,14 +1,16 @@
+export type Role = 'superadmin' | 'guru' | 'industri' | 'siswa';
+
+/**
+ * Data user yang dibagikan dari HandleInertiaRequests (hanya kolom aman).
+ */
 export type User = {
     id: number;
     name: string;
     email: string;
-    avatar?: string;
-    email_verified_at: string | null;
-    created_at: string;
-    updated_at: string;
-    [key: string]: unknown; // This allows for additional properties...
+    role: Role;
+    role_label: string;
 };
 
 export type Auth = {
-    user: User;
+    user: User | null;
 };
