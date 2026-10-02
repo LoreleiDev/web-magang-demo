@@ -57,7 +57,7 @@ Ada 4 role. Semua akun dibuat oleh Superadmin (tidak ada registrasi mandiri).
 | Buat kelompok magang, tetapkan guru & siswa      | ✅         | ❌                             | ❌                                         | ❌                     |
 | Lihat daftar siswa                               | Semua      | Hanya kelompok yang ia bimbing | Hanya siswa di perusahaannya               | Diri sendiri           |
 | Input & edit kompetensi                          | ❌         | ✅                             | ❌                                         | ❌                     |
-| Isi level kompetensi siswa (1–4)                 | ❌         | ✅ Kelompoknya                 | ❌                                         | ❌                     |
+| Isi level kompetensi siswa (1–4)                 | Otomatis dari kuis (tidak ada yang mengisi manual) ||||
 | Input & edit materi                              | ❌         | ✅                             | ❌                                         | ❌                     |
 | Lihat materi                                     | ✅         | ✅                             | ✅ Program keahlian siswa di perusahaannya | ✅ Program keahliannya |
 | Verifikasi materi & beri masukan                 | ❌         | ❌                             | ✅ Program keahlian siswa di perusahaannya | ❌                     |
@@ -81,7 +81,8 @@ User
   status_aktif, created_at
 
 ProfilSiswa
-  user_id, id_siswa (NIS), program_keahlian, unit_kerja, kelompok_id
+  user_id, id_siswa (NIS), program_keahlian, unit_kerja, kelompok_id,
+  kompetensi_fokus_id (dipilih saat Mulai Pendampingan)
   -> perusahaan siswa DIAMBIL dari kelompok (kelompok.perusahaan_id),
      tidak disimpan terpisah
   -> tanggal mulai/selesai magang DIAMBIL dari periode kelompok
@@ -107,11 +108,12 @@ Kompetensi (diinput guru, umum per program keahlian)
 
 ProgresKompetensi (per siswa per kompetensi)
   siswa_id, kompetensi_id,
-  level_siswa (1–4), level_diisi_oleh (guru_id), tanggal_level_diisi,
+  level_siswa (1–4, otomatis dari kuis), tanggal_level_diisi (kapan level berubah),
   status, diverifikasi_oleh (user industri), tanggal_verifikasi
 
 Materi (umum, berlaku untuk semua siswa dengan program keahlian yang sama)
-  id, kompetensi_id, judul, dibuat_oleh (guru_id), diubah_terakhir,
+  id, kompetensi_id, judul, level (1–4), nilai_minimal (bawaan 75),
+  dibuat_oleh (guru_id), diubah_terakhir,
   terverifikasi_industri (boolean, menentukan badge)
   langkah[] (8 langkah microlearning, lihat bagian 6.4), tiap langkah berisi:
     konten_teks,
@@ -127,7 +129,7 @@ Kuis
   id, materi_id, soal[] (pertanyaan, pilihan, jawaban_benar, pembahasan)
 
 HasilAssessment
-  siswa_id, kuis_id, skor (%), tanggal, lulus (skor >= 75)
+  siswa_id, kuis_id, skor (%), tanggal, lulus (skor >= nilai_minimal materi)
 
 Logbook
   id, siswa_id, tanggal, aktivitas, peralatan_software, sudah_dipahami,
@@ -168,6 +170,11 @@ Form pendampingan siswa berisi:
 - Program keahlian → terisi otomatis dari akun, terkunci
 - Nama industri → **terisi otomatis dari kelompok magang siswa, terkunci**
 - Unit/bagian kerja → dipilih siswa dari `daftar_unit_kerja` perusahaan tersebut
+  (hanya sekali; setelah itu terkunci)
+- Kompetensi yang dijalani → dipilih siswa **setiap kali login** dari kompetensi
+  program keahliannya (keputusan 13 no. 18); menjadi fokus di Dashboard
+
+Siswa login lewat halaman khusus `/siswa/login`; halaman ini muncul setelahnya.
 
 Tombol: **"Mulai Pendampingan Magang"**
 
@@ -329,7 +336,7 @@ Tombol: **"Analisis dengan AI"** → hasil (lihat bagian 9.5):
 
 - Kuis interaktif setiap selesai materi.
 - Tampilkan skor.
-- Jika skor **< 75%** → tampilkan rekomendasi penguatan materi terkait.
+- Jika skor **di bawah nilai minimal materi (bawaan 75)** → tampilkan rekomendasi penguatan materi terkait.
 
 ### 6.8 Progress
 
@@ -354,8 +361,7 @@ Gunakan grafik dan progress bar:
     - logbook
     - hasil assessment
     - status verifikasi kompetensi (hanya dilihat, verifikasi dilakukan industri)
-- **Isi Level Kompetensi:** guru mengisi/mengubah `level_siswa` (1–4) per
-  kompetensi untuk siswa di kelompoknya.
+- **Level Kompetensi (lihat saja):** level siswa naik otomatis dari kuis (bagian 11.1).
 - **Manajemen Kompetensi:** tambah dan edit kompetensi (kompetensi sekolah,
   aktivitas industri, target level) per program keahlian.
 - **Manajemen Materi:** tambah dan edit materi (8 langkah) beserta kuisnya.
@@ -523,20 +529,23 @@ Perpindahan status berjalan **otomatis** (keputusan 13 no. 13):
 | Dari → Ke                            | Pemicu                                             |
 | ------------------------------------ | -------------------------------------------------- |
 | Belum dipelajari → Sedang dipelajari | Siswa membuka materi kompetensi tsb                |
-| → Sedang dipraktikkan                | Siswa lulus kuis materi kompetensi tsb (skor ≥ 75) |
-| → Menunggu verifikasi                | Guru mengisi `level_siswa` ≥ `target_level`        |
+| → Sedang dipraktikkan                | Siswa lulus kuis materi kompetensi tsb (skor ≥ nilai minimal materi) |
+| → Menunggu verifikasi                | Level siswa (otomatis dari kuis) ≥ `target_level`  |
 | → Terverifikasi                      | Industri menekan "Verifikasi Kompetensi"           |
 
-Status tidak pernah mundur otomatis, kecuali "Menunggu verifikasi" kembali ke
-"Sedang dipraktikkan" jika guru menurunkan level di bawah target sebelum
-diverifikasi. (Aturan sementara, menunggu konfirmasi pemilik proyek.)
+Status tidak pernah mundur. Level juga tidak pernah turun (lihat 11.1).
 
 ## 11. Verifikasi
 
 ### 11.1 Pengisian Level & Verifikasi Kompetensi
 
-- **Level siswa (1–4)** diisi oleh **guru pembimbing**, hanya untuk siswa di
-  kelompok yang ia bimbing. Simpan siapa yang mengisi dan kapan.
+- **Level siswa (1–4) naik otomatis** (revisi pemilik proyek, keputusan 13 no. 6):
+  - Setiap materi diberi **level 1–4** dan **nilai minimal lulus** (bawaan 75) oleh guru.
+  - Jika siswa lulus kuis materi level N, level siswa pada kompetensi materi
+    itu menjadi N bila lebih tinggi dari level sekarang (level tidak pernah turun).
+  - Belum lulus kuis apa pun = level 1 (Belum mampu).
+  - Simpan kapan level terakhir berubah. Guru tidak mengisi level secara manual;
+    guru hanya melihat.
 - Status **"Terverifikasi"** hanya bisa diberikan oleh **pembimbing industri**
   lewat tombol **"Verifikasi Kompetensi"**, hanya untuk siswa di perusahaannya.
   Simpan siapa yang memverifikasi dan kapan.
@@ -599,7 +608,7 @@ Teknis:
 | 3   | Industri siswa                                 | Otomatis terpilih dari kelompok magang yang ditetapkan Superadmin                                                               |
 | 4   | Verifikasi kompetensi                          | Hanya pembimbing industri                                                                                                       |
 | 5   | Input data kompetensi                          | Hanya guru                                                                                                                      |
-| 6   | Pengisi level kompetensi siswa                 | Guru pembimbing                                                                                                                 |
+| 6   | Pengisi level kompetensi siswa                 | Otomatis: lulus kuis materi level N -> level siswa N (tidak pernah turun); guru hanya melihat |
 | 7   | Dokumen knowledge base sekolah                 | Diunggah guru                                                                                                                   |
 | 8   | Dokumen knowledge base industri                | Diunggah superadmin saat mendaftarkan perusahaan                                                                                |
 | 9   | Guru per kelompok                              | Satu kelompok hanya satu guru; satu guru boleh membimbing lebih dari satu kelompok                                              |
@@ -611,13 +620,14 @@ Teknis:
 | 15  | Program keahlian                               | Dikelola superadmin (tabel `program_keahlian`: kode + nama), dipilih dari daftar di semua form dan dipakai untuk pembatasan data; kode tidak bisa diubah, program yang masih dipakai tidak bisa dihapus |
 | 16  | Hak edit kompetensi & materi                   | Guru hanya menambah/mengedit untuk program keahliannya sendiri (`ProfilGuru.program_keahlian`); belum ada fitur hapus           |
 | 17  | Superadmin melihat materi, logbook, assessment | Halaman baca-saja (read-only) di Panel Superadmin                                                                               |
-| 18  | Halaman Mulai Pendampingan                     | Hanya tampil sampai siswa memilih unit kerja; setelah itu login langsung ke Dashboard                                           |
+| 18  | Login & Mulai Pendampingan siswa               | Siswa login di halaman khusus `/siswa/login`; role lain di `/login`. Setelah login siswa selalu ke halaman Mulai Pendampingan untuk memilih kompetensi yang dijalani (unit kerja hanya dipilih sekali, dapat dilihat di form) |
 | 19  | Persentase progres siswa                       | Persentase kompetensi (program keahlian siswa) yang `level_siswa` ≥ `target_level`                                              |
 | 20  | "Aktivitas yang harus dilakukan hari ini"      | Otomatis: isi logbook hari ini jika belum; lanjutkan materi untuk gap terbesar; ulangi kuis yang skornya < 75                   |
 | 21  | Logbook                                        | Satu logbook per tanggal per siswa, dapat diedit; bukti kegiatan berupa gambar/PDF maks. 5 MB                                   |
 | 22  | Kuis                                           | Boleh diulang; semua percobaan disimpan; skor yang ditampilkan adalah skor terbaik                                              |
+| 29  | Nilai lulus kuis                               | Ditentukan guru per materi (nilai minimal, bawaan 75); menggantikan batas tetap 75 |
 | 23  | Autentikasi                                    | Starter kit React "blank" + login buatan sendiri (email + password, rate limit); tanpa registrasi, reset password, atau 2FA     |
-| 24  | Level siswa belum diisi guru                   | Dianggap level 1 (Belum mampu) untuk gap, Learning Gap, dan progres |
+| 24  | Level awal siswa                               | Level 1 (Belum mampu) sampai lulus kuis materi yang lebih tinggi |
 | 25  | Akun                                           | Role tidak bisa diubah setelah dibuat; tidak ada hapus akun (cukup dinonaktifkan) |
 | 26  | Hapus data                                     | Kelompok tidak bisa dihapus; perusahaan yang masih dipakai kelompok/akun industri dan unit kerja yang masih dipilih siswa tidak bisa dihapus |
 | 27  | Unit kerja siswa                               | Dikosongkan (siswa memilih ulang) jika siswa pindah ke kelompok di perusahaan lain, dikeluarkan dari kelompok, atau perusahaan kelompok diganti |

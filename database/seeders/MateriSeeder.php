@@ -36,7 +36,7 @@ class MateriSeeder extends Seeder
                 'siswa_id' => $siswa->id,
                 'kuis_id' => $materi[$kunci]->kuis->id,
                 'skor' => $skor,
-                'lulus' => $skor >= config('magang.skor_lulus'),
+                'lulus' => $skor >= $materi[$kunci]->nilai_minimal,
                 'tanggal' => Carbon::parse('2026-09-28 15:00'),
             ]);
         }
@@ -51,6 +51,8 @@ class MateriSeeder extends Seeder
         $materi = Materi::create([
             'kompetensi_id' => $kompetensi->id,
             'judul' => $judul,
+            'level' => 3,
+            'nilai_minimal' => config('magang.skor_lulus'),
             'dibuat_oleh' => $kompetensi->dibuat_oleh,
             'diubah_terakhir' => Carbon::parse('2026-09-20 09:00'),
             'terverifikasi_industri' => false,

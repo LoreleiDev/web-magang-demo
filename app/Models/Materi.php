@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\MateriFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -10,7 +11,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Support\Carbon;
 
 /**
  * Materi umum per program keahlian (lewat kompetensinya), dibuat guru.
@@ -19,13 +19,15 @@ use Illuminate\Support\Carbon;
  * @property int $kompetensi_id
  * @property string $judul
  * @property int $dibuat_oleh
- * @property Carbon|null $diubah_terakhir
+ * @property CarbonImmutable|null $diubah_terakhir
+ * @property int $level Level 1-4 yang dicapai siswa jika lulus kuis materi ini.
+ * @property int $nilai_minimal Nilai minimal lulus kuis (bawaan 75).
  * @property bool $terverifikasi_industri
  * @property-read Kompetensi $kompetensi
  * @property-read User $pembuat
  */
 #[Table('materi')]
-#[Fillable(['kompetensi_id', 'judul', 'dibuat_oleh', 'diubah_terakhir', 'terverifikasi_industri'])]
+#[Fillable(['kompetensi_id', 'judul', 'level', 'nilai_minimal', 'dibuat_oleh', 'diubah_terakhir', 'terverifikasi_industri'])]
 class Materi extends Model
 {
     /** @use HasFactory<MateriFactory> */
@@ -38,6 +40,8 @@ class Materi extends Model
     {
         return [
             'diubah_terakhir' => 'datetime',
+            'level' => 'integer',
+            'nilai_minimal' => 'integer',
             'terverifikasi_industri' => 'boolean',
         ];
     }

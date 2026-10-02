@@ -2,18 +2,18 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * Logbook harian siswa; satu per tanggal.
  *
  * @property int $id
  * @property int $siswa_id
- * @property Carbon $tanggal
+ * @property CarbonImmutable $tanggal
  * @property string $aktivitas
  * @property string|null $peralatan_software
  * @property string|null $sudah_dipahami

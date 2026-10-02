@@ -3,6 +3,9 @@ import type { Media } from '@/components/media-embed';
 export type MateriRingkas = {
     id: number;
     judul: string;
+    level: number;
+    nilai_minimal: number;
+    kompetensi_id: number;
     terverifikasi_industri: boolean;
     kompetensi: string;
     program_keahlian: string;

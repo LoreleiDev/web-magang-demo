@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\SiswaLoginController;
 use App\Http\Controllers\Guru;
+use App\Http\Controllers\Industri;
+use App\Http\Controllers\LogbookBuktiController;
+use App\Http\Controllers\Siswa;
 use App\Http\Controllers\Superadmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -48,7 +52,6 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
     Route::get('/', Guru\DashboardController::class)->name('dashboard');
 
     Route::get('siswa/{siswa}', [Guru\SiswaController::class, 'show'])->name('siswa.show');
-    Route::put('siswa/{siswa}/kompetensi/{kompetensi}', [Guru\SiswaController::class, 'isiLevel'])->name('siswa.level');
 
     Route::resource('kompetensi', Guru\KompetensiController::class)->except(['show', 'destroy']);
     Route::resource('materi', Guru\MateriController::class)->except('destroy');
@@ -60,9 +63,46 @@ Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(f
 });
 
 Route::middleware(['auth', 'role:industri'])->prefix('industri')->name('industri.')->group(function () {
-    Route::inertia('/', 'industri/dashboard')->name('dashboard');
+    Route::get('/', Industri\DashboardController::class)->name('dashboard');
+
+    Route::get('siswa/{siswa}', [Industri\SiswaController::class, 'show'])->name('siswa.show');
+    Route::post('siswa/{siswa}/kompetensi/{kompetensi}/verifikasi', [Industri\SiswaController::class, 'verifikasi'])
+        ->name('siswa.verifikasi');
+
+    Route::get('materi', [Industri\MateriController::class, 'index'])->name('materi.index');
+    Route::get('materi/{materi}', [Industri\MateriController::class, 'show'])->name('materi.show');
+    Route::post('materi/{materi}/verifikasi', [Industri\MateriController::class, 'periksa'])->name('materi.verifikasi');
+});
+
+// Login khusus siswa (keputusan 13 no. 18).
+Route::middleware('guest')->prefix('siswa')->name('siswa.')->group(function () {
+    Route::get('login', [SiswaLoginController::class, 'create'])->name('login');
+    Route::post('login', [SiswaLoginController::class, 'store'])->name('login.store');
 });
 
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
-    Route::inertia('/', 'siswa/dashboard')->name('dashboard');
+    Route::get('mulai', [Siswa\MulaiPendampinganController::class, 'show'])->name('mulai');
+    Route::post('mulai', [Siswa\MulaiPendampinganController::class, 'store'])->name('mulai.store');
+
+    Route::middleware('pendampingan')->group(function () {
+        Route::get('/', Siswa\DashboardController::class)->name('dashboard');
+        Route::get('peta-kompetensi', [Siswa\KompetensiController::class, 'peta'])->name('peta');
+        Route::get('learning-gap', [Siswa\KompetensiController::class, 'gap'])->name('gap');
+
+        Route::get('belajar', [Siswa\BelajarController::class, 'index'])->name('belajar.index');
+        Route::get('belajar/{materi}', [Siswa\BelajarController::class, 'show'])->name('belajar.show');
+        Route::post('belajar/{materi}/kuis', [Siswa\BelajarController::class, 'kuis'])->name('belajar.kuis');
+
+        Route::get('logbook', [Siswa\LogbookController::class, 'index'])->name('logbook.index');
+        Route::post('logbook', [Siswa\LogbookController::class, 'store'])->name('logbook.store');
+        Route::put('logbook/{logbook}', [Siswa\LogbookController::class, 'update'])->name('logbook.update');
+
+        Route::get('assessment', Siswa\AssessmentController::class)->name('assessment');
+        Route::get('progress', Siswa\ProgressController::class)->name('progress');
+    });
 });
+
+// Bukti kegiatan logbook: siswa pemilik, guru kelompoknya, industri perusahaannya, superadmin.
+Route::get('logbook/{logbook}/bukti', LogbookBuktiController::class)
+    ->middleware('auth')
+    ->name('logbook.bukti');

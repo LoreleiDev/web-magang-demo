@@ -20,6 +20,8 @@ function dataMateri(array $timpa = []): array
     return [
         'kompetensi_id' => test()->kompetensi->id,
         'judul' => 'Subnetting dasar',
+        'level' => 3,
+        'nilai_minimal' => 75,
         'langkah' => $langkah,
         'soal' => [[
             'pertanyaan' => '/27 punya berapa host?',
@@ -129,4 +131,22 @@ test('daftar materi menampilkan masukan terakhir industri', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->where('materi.0.masukan_terakhir.masukan', 'Tambahkan contoh VLSM.')
             ->where('materi.0.terverifikasi_industri', false));
+});
+
+test('mengedit materi yang sudah diverifikasi menghapus badge (perlu verifikasi ulang)', function () {
+    $this->actingAs($this->guru)->post(route('guru.materi.store'), dataMateri());
+    $materi = Materi::firstOrFail();
+    $materi->update(['terverifikasi_industri' => true]);
+
+    $this->actingAs($this->guru)
+        ->put(route('guru.materi.update', $materi), dataMateri(['judul' => 'Judul baru']))
+        ->assertSessionHasNoErrors();
+
+    expect($materi->fresh()->terverifikasi_industri)->toBeFalse();
+});
+
+test('level dan nilai minimal materi divalidasi', function () {
+    $this->actingAs($this->guru)
+        ->post(route('guru.materi.store'), dataMateri(['level' => 5, 'nilai_minimal' => 0]))
+        ->assertSessionHasErrors(['level', 'nilai_minimal']);
 });

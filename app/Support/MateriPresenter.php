@@ -21,6 +21,9 @@ final class MateriPresenter
         return [
             'id' => $materi->id,
             'judul' => $materi->judul,
+            'level' => $materi->level,
+            'nilai_minimal' => $materi->nilai_minimal,
+            'kompetensi_id' => $materi->kompetensi_id,
             'terverifikasi_industri' => $materi->terverifikasi_industri,
             'kompetensi' => $materi->kompetensi->nama_kompetensi_sekolah,
             'program_keahlian' => $materi->kompetensi->program_keahlian,

@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { HasilKuis } from '@/types/siswa';
 
 declare module 'react' {
     interface InputHTMLAttributes<T> {
@@ -16,6 +17,7 @@ declare module '@inertiajs/core' {
         };
         flashDataType: {
             toast?: { type: 'success' | 'error'; message: string };
+            hasilKuis?: HasilKuis;
         };
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
@@ -11,7 +12,8 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Login email + password. Tidak ada registrasi mandiri: semua akun dibuat superadmin.
+ * Login email + password untuk superadmin, guru, dan industri. Siswa memakai
+ * halaman login khusus (SiswaLoginController). Tidak ada registrasi mandiri.
  */
 class AuthenticatedSessionController extends Controller
 {
@@ -22,7 +24,10 @@ class AuthenticatedSessionController extends Controller
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        $request->authenticate(
+            [Role::Superadmin, Role::Guru, Role::Industri],
+            'Akun siswa masuk lewat halaman Login Siswa.',
+        );
 
         $request->session()->regenerate();
 
@@ -31,11 +36,13 @@ class AuthenticatedSessionController extends Controller
 
     public function destroy(Request $request): RedirectResponse
     {
+        $siswa = $request->user()?->hasRole(Role::Siswa) ?? false;
+
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route($siswa ? 'siswa.login' : 'login');
     }
 }

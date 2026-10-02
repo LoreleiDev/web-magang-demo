@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Enums\StatusKompetensi;
+use App\Models\HasilAssessment;
 use App\Models\Kompetensi;
+use App\Models\Materi;
 use App\Models\ProgresKompetensi;
 use App\Models\User;
 use Illuminate\Support\Collection;
@@ -11,10 +13,12 @@ use Illuminate\Support\Collection;
 /**
  * Perhitungan level, gap, progres, dan perpindahan status kompetensi siswa.
  *
- * - Level yang belum diisi guru dianggap 1 (keputusan 13 no. 24).
+ * - Level naik otomatis dari kuis materi berlevel; awalnya 1 (bagian 11.1, keputusan 13 no. 24).
  * - gap = target_level - level; merah >= 2, kuning = 1, hijau <= 0 (bagian 6.2).
  * - Persentase progres = kompetensi dengan level >= target (keputusan 13 no. 19).
  * - Status berpindah otomatis (bagian 10).
+ *
+ * @phpstan-type BarisPeta array{kompetensi: Kompetensi, progres: ProgresKompetensi|null, level: int, level_diisi: bool, gap: int, warna: string, status: StatusKompetensi}
  */
 class ProgresKompetensiService
 {
@@ -35,7 +39,7 @@ class ProgresKompetensiService
     /**
      * Peta kompetensi siswa: semua kompetensi program keahliannya beserta progresnya.
      *
-     * @return Collection<int, array{kompetensi: Kompetensi, progres: ProgresKompetensi|null, level: int, level_diisi: bool, gap: int, warna: string, status: StatusKompetensi}>
+     * @return Collection<int, BarisPeta>
      */
     public function peta(User $siswa): Collection
     {
@@ -84,40 +88,77 @@ class ProgresKompetensiService
     }
 
     /**
-     * Guru mengisi/mengubah level siswa (bagian 11.1) dan status ikut berpindah.
+     * Siswa membuka materi -> "Sedang dipelajari" (jika belum lebih jauh).
      */
-    public function isiLevel(User $siswa, Kompetensi $kompetensi, int $level, User $guru): ProgresKompetensi
+    public function tandaiMulaiBelajar(User $siswa, Kompetensi $kompetensi): ProgresKompetensi
     {
-        $progres = ProgresKompetensi::firstOrNew([
-            'siswa_id' => $siswa->id,
-            'kompetensi_id' => $kompetensi->id,
-        ]);
-
-        $progres->fill([
-            'level_siswa' => $level,
-            'level_diisi_oleh' => $guru->id,
-            'tanggal_level_diisi' => now(),
-        ]);
-
-        $progres->status = $this->statusSetelahIsiLevel($progres->status ?? StatusKompetensi::BelumDipelajari, $level, $kompetensi->target_level);
+        $progres = $this->progres($siswa, $kompetensi);
+        $progres->status = $this->naikkan($progres->status, StatusKompetensi::SedangDipelajari);
         $progres->save();
 
         return $progres;
     }
 
     /**
-     * Level >= target -> "Menunggu verifikasi". Jika level diturunkan di bawah target
-     * sebelum diverifikasi -> kembali "Sedang dipraktikkan" (aturan sementara, bagian 10).
-     * Status "Terverifikasi" tidak diubah oleh guru.
+     * Simpan satu percobaan kuis. Jika lulus (skor >= nilai minimal materi):
+     * level siswa = level materi bila lebih tinggi (tidak pernah turun), status
+     * minimal "Sedang dipraktikkan", dan "Menunggu verifikasi" bila level >= target.
      */
-    private function statusSetelahIsiLevel(StatusKompetensi $status, int $level, int $target): StatusKompetensi
+    public function catatHasilKuis(User $siswa, Materi $materi, int $skor): HasilAssessment
     {
-        return match (true) {
-            $status === StatusKompetensi::Terverifikasi => $status,
-            $level >= $target => StatusKompetensi::MenungguVerifikasi,
-            $status === StatusKompetensi::MenungguVerifikasi => StatusKompetensi::SedangDipraktikkan,
-            default => $status,
-        };
+        $materi->loadMissing(['kompetensi', 'kuis']);
+        $lulus = $skor >= $materi->nilai_minimal;
+
+        $hasil = HasilAssessment::create([
+            'siswa_id' => $siswa->id,
+            'kuis_id' => $materi->kuis?->id,
+            'skor' => $skor,
+            'lulus' => $lulus,
+            'tanggal' => now(),
+        ]);
+
+        $kompetensi = $materi->kompetensi;
+        $progres = $this->progres($siswa, $kompetensi);
+        $status = $this->naikkan($progres->status, StatusKompetensi::SedangDipelajari);
+
+        if ($lulus) {
+            $levelLama = $progres->level_siswa ?? self::LEVEL_BAWAAN;
+
+            if ($materi->level > $levelLama) {
+                $progres->level_siswa = $materi->level;
+                $progres->tanggal_level_diisi = now();
+            }
+
+            $status = $this->naikkan($status, StatusKompetensi::SedangDipraktikkan);
+
+            if (($progres->level_siswa ?? self::LEVEL_BAWAAN) >= $kompetensi->target_level) {
+                $status = $this->naikkan($status, StatusKompetensi::MenungguVerifikasi);
+            }
+        }
+
+        $progres->status = $status;
+        $progres->save();
+
+        return $hasil;
+    }
+
+    private function progres(User $siswa, Kompetensi $kompetensi): ProgresKompetensi
+    {
+        $progres = ProgresKompetensi::firstOrNew([
+            'siswa_id' => $siswa->id,
+            'kompetensi_id' => $kompetensi->id,
+        ]);
+        $progres->status ??= StatusKompetensi::BelumDipelajari;
+
+        return $progres;
+    }
+
+    /**
+     * Status tidak pernah mundur (bagian 10).
+     */
+    private function naikkan(StatusKompetensi $sekarang, StatusKompetensi $tujuan): StatusKompetensi
+    {
+        return $tujuan->urutan() > $sekarang->urutan() ? $tujuan : $sekarang;
     }
 
     /**

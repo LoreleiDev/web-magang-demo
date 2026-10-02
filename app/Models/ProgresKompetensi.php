@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use App\Enums\StatusKompetensi;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * Progres satu siswa pada satu kompetensi.
@@ -17,10 +17,10 @@ use Illuminate\Support\Carbon;
  * @property int $kompetensi_id
  * @property int|null $level_siswa
  * @property int|null $level_diisi_oleh
- * @property Carbon|null $tanggal_level_diisi
+ * @property CarbonImmutable|null $tanggal_level_diisi
  * @property StatusKompetensi $status
  * @property int|null $diverifikasi_oleh
- * @property Carbon|null $tanggal_verifikasi
+ * @property CarbonImmutable|null $tanggal_verifikasi
  * @property-read User $siswa
  * @property-read Kompetensi $kompetensi
  */

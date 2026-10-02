@@ -47,10 +47,16 @@ export function LogbookKartu({
                         {logbook.aktivitas}
                     </p>
                     <div className="mt-2 flex gap-3 text-xs text-navy-500">
-                        {logbook.ada_bukti && (
-                            <span className="flex items-center gap-1">
-                                <Paperclip className="size-3.5" /> Ada bukti
-                            </span>
+                        {logbook.url_bukti && (
+                            <a
+                                href={logbook.url_bukti}
+                                target="_blank"
+                                rel="noopener"
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex items-center gap-1 font-semibold underline-offset-2 hover:underline"
+                            >
+                                <Paperclip className="size-3.5" /> Lihat bukti
+                            </a>
                         )}
                         {logbook.sudah_dianalisis && (
                             <span className="flex items-center gap-1">

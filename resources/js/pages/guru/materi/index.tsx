@@ -64,7 +64,8 @@ export default function GuruMateriIndex({
                         >
                             <div className="flex-1 p-4">
                                 <p className="text-xs font-semibold text-navy-500">
-                                    {m.kompetensi}
+                                    {m.kompetensi} · Level {m.level} · lulus ≥{' '}
+                                    {m.nilai_minimal}
                                 </p>
                                 <h2 className="mt-1 text-base leading-snug font-bold text-navy-900">
                                     {m.judul}

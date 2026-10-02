@@ -112,7 +112,8 @@ export function DetailSiswa({
                     Peta kompetensi
                 </h2>
                 <p className="mb-4 text-sm text-muted-foreground">
-                    Level yang belum diisi guru dianggap level 1 (Belum mampu).
+                    Level naik otomatis saat siswa lulus kuis materi berlevel.
+                    Level awal 1 (Belum mampu).
                 </p>
 
                 {kompetensi.length === 0 ? (
@@ -157,7 +158,7 @@ export function DetailSiswa({
                                                 Level <strong>{k.level}</strong>{' '}
                                                 · {namaLevel(k.level)}
                                                 {!k.level_diisi &&
-                                                    ' (belum diisi guru)'}{' '}
+                                                    ' (belum lulus kuis)'}{' '}
                                                 · target {k.target_level}
                                             </p>
                                         </div>

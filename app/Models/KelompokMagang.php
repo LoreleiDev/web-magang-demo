@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Database\Factories\KelompokMagangFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
@@ -10,15 +11,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
-use Illuminate\Support\Carbon;
 
 /**
  * @property int $id
  * @property string $nama_kelompok
  * @property int $perusahaan_id
  * @property int $guru_pembimbing_id
- * @property Carbon $periode_mulai
- * @property Carbon $periode_selesai
+ * @property CarbonImmutable $periode_mulai
+ * @property CarbonImmutable $periode_selesai
  * @property-read Perusahaan $perusahaan
  * @property-read User $guruPembimbing
  */

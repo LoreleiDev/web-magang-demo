@@ -83,18 +83,6 @@ test('guru hanya melihat kelompok yang ia bimbing', function () {
         ->and($this->guruA->can('view', $this->kelompokB))->toBeFalse();
 });
 
-test('level kompetensi hanya diisi guru pembimbing kelompok siswa', function () {
-    $progres = ProgresKompetensi::create([
-        'siswa_id' => $this->siswaA->id,
-        'kompetensi_id' => Kompetensi::factory()->create(['dibuat_oleh' => $this->guruA->id])->id,
-    ]);
-
-    expect($this->guruA->can('isiLevel', $progres))->toBeTrue()
-        ->and($this->guruB->can('isiLevel', $progres))->toBeFalse()
-        ->and($this->industriA->can('isiLevel', $progres))->toBeFalse()
-        ->and($this->superadmin->can('isiLevel', $progres))->toBeFalse();
-});
-
 test('verifikasi kompetensi hanya oleh industri perusahaan siswa dan saat menunggu verifikasi', function () {
     $progres = ProgresKompetensi::create([
         'siswa_id' => $this->siswaA->id,

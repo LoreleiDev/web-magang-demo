@@ -2,11 +2,13 @@
 
 namespace Database\Seeders;
 
+use App\Enums\HasilVerifikasiMateri;
 use App\Enums\Role;
 use App\Enums\StatusKompetensi;
 use App\Models\KelompokMagang;
 use App\Models\Kompetensi;
 use App\Models\Logbook;
+use App\Models\Materi;
 use App\Models\Perusahaan;
 use App\Models\ProfilGuru;
 use App\Models\ProfilIndustri;
@@ -98,23 +100,24 @@ class DatabaseSeeder extends Seeder
             ['Pengujian perangkat lunak', 'Menulis test case dan melaporkan bug di issue tracker', 4],
         ]);
 
-        // [level_siswa, status] per kompetensi, urutan sama dengan daftar kompetensi di atas.
+        // [level_siswa, status] per kompetensi (urutan sama dengan daftar di atas). Level > 1
+        // berarti siswa sudah lulus kuis materi berlevel tsb sebelumnya (bagian 11.1).
         $this->progres($andi, $kompetensiTkj, $guruTkj, $industriNusantara, [
             [3, StatusKompetensi::Terverifikasi], [1, StatusKompetensi::SedangDipelajari],
-            [3, StatusKompetensi::BelumDipelajari], [2, StatusKompetensi::BelumDipelajari],
+            [3, StatusKompetensi::SedangDipraktikkan], [2, StatusKompetensi::SedangDipraktikkan],
         ]);
         $this->progres($bayu, $kompetensiTkj, $guruTkj, $industriNusantara, [
-            [2, StatusKompetensi::BelumDipelajari], [3, StatusKompetensi::MenungguVerifikasi],
-            [2, StatusKompetensi::BelumDipelajari], [3, StatusKompetensi::BelumDipelajari],
+            [2, StatusKompetensi::SedangDipraktikkan], [3, StatusKompetensi::MenungguVerifikasi],
+            [2, StatusKompetensi::SedangDipraktikkan], [3, StatusKompetensi::SedangDipraktikkan],
         ]);
         $this->progres($citra, $kompetensiTkj, $guruTkj, $industriNusantara, array_fill(0, 4, [1, StatusKompetensi::BelumDipelajari]));
         $this->progres($dewi, $kompetensiRpl, $guruRpl, $industriSolusi, [
-            [3, StatusKompetensi::MenungguVerifikasi], [2, StatusKompetensi::BelumDipelajari],
-            [2, StatusKompetensi::SedangDipraktikkan], [2, StatusKompetensi::BelumDipelajari],
+            [3, StatusKompetensi::MenungguVerifikasi], [2, StatusKompetensi::SedangDipraktikkan],
+            [3, StatusKompetensi::MenungguVerifikasi], [2, StatusKompetensi::SedangDipraktikkan],
         ]);
         $this->progres($eko, $kompetensiRpl, $guruRpl, $industriSolusi, [
-            [2, StatusKompetensi::BelumDipelajari], [3, StatusKompetensi::Terverifikasi],
-            [1, StatusKompetensi::SedangDipelajari], [3, StatusKompetensi::BelumDipelajari],
+            [2, StatusKompetensi::SedangDipraktikkan], [3, StatusKompetensi::Terverifikasi],
+            [1, StatusKompetensi::SedangDipelajari], [3, StatusKompetensi::SedangDipraktikkan],
         ]);
         $this->progres($fajar, $kompetensiRpl, $guruRpl, $industriSolusi, array_fill(0, 4, [1, StatusKompetensi::BelumDipelajari]));
 
@@ -130,6 +133,17 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->logbookContoh($andi, $dewi);
+
+        // Contoh verifikasi materi: industri TKJ memverifikasi materi subnetting (badge tampil).
+        $materiTkj = Materi::where('kompetensi_id', $kompetensiTkj[1]->id)->firstOrFail();
+        $materiTkj->verifikasi()->create([
+            'diperiksa_oleh' => $industriNusantara->id,
+            'perusahaan_id' => $nusantara->id,
+            'hasil' => HasilVerifikasiMateri::Diverifikasi,
+            'masukan' => 'Sudah sesuai dengan praktik IPAM di NOC kami. Bisa ditambah contoh VLSM.',
+            'email_terkirim' => true,
+        ]);
+        $materiTkj->update(['terverifikasi_industri' => true]);
     }
 
     private function akun(string $nama, string $email, Role $role): User
@@ -202,7 +216,7 @@ class DatabaseSeeder extends Seeder
                 'siswa_id' => $siswa->id,
                 'kompetensi_id' => $k->id,
                 'level_siswa' => $level,
-                'level_diisi_oleh' => $guru->id,
+                'level_diisi_oleh' => null,
                 'tanggal_level_diisi' => Carbon::parse('2026-09-25 10:00'),
                 'status' => $status,
                 'diverifikasi_oleh' => $terverifikasi ? $industri->id : null,

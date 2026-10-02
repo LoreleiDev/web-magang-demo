@@ -24,6 +24,8 @@ class MateriRequest extends FormRequest
                 Rule::exists('kompetensi', 'id')->where('program_keahlian', $this->user()?->programKeahlian()),
             ],
             'judul' => ['required', 'string', 'max:255'],
+            'level' => ['required', 'integer', 'between:1,4'],
+            'nilai_minimal' => ['required', 'integer', 'between:1,100'],
 
             'langkah' => ['required', 'array', 'size:8'],
             'langkah.*.konten_teks' => ['nullable', 'string', 'max:20000'],
@@ -50,6 +52,8 @@ class MateriRequest extends FormRequest
             'kompetensi_id.required' => 'Pilih kompetensi untuk materi ini.',
             'kompetensi_id.exists' => 'Kompetensi harus dari program keahlian Anda.',
             'langkah.size' => 'Materi harus berisi 8 langkah.',
+            'level.between' => 'Level materi harus 1 sampai 4.',
+            'nilai_minimal.between' => 'Nilai minimal harus 1 sampai 100.',
             'langkah.*.media.max' => 'Maksimal 5 media per langkah.',
             'langkah.*.media.*.url.required' => 'Link media wajib diisi.',
             'soal.required' => 'Tambahkan minimal satu soal kuis.',

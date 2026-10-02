@@ -2,11 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Carbon;
 
 /**
  * Satu percobaan kuis oleh siswa.
@@ -16,7 +16,7 @@ use Illuminate\Support\Carbon;
  * @property int $kuis_id
  * @property int $skor Persentase 0-100.
  * @property bool $lulus
- * @property Carbon $tanggal
+ * @property CarbonImmutable $tanggal
  * @property-read User $siswa
  * @property-read Kuis $kuis
  */

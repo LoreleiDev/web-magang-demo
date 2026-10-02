@@ -15,6 +15,7 @@ import { EditorMedia } from '@/components/editor-media';
 import type { SoalForm } from '@/components/editor-soal';
 import { EditorSoal } from '@/components/editor-soal';
 import { FormField } from '@/components/form-field';
+import { namaLevel } from '@/components/kompetensi-indikator';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,8 @@ type LangkahForm = { konten_teks: string; media: MediaForm[] };
 type DataForm = {
     kompetensi_id: string;
     judul: string;
+    level: number;
+    nilai_minimal: number;
     langkah: LangkahForm[];
     soal: SoalForm[];
 };
@@ -45,6 +48,8 @@ type Props = {
         id: number;
         kompetensi_id: number;
         judul: string;
+        level: number;
+        nilai_minimal: number;
         terverifikasi_industri: boolean;
         langkah: LangkahForm[];
         soal: SoalForm[];
@@ -77,6 +82,8 @@ export default function MateriForm({
     const form = useForm<DataForm>({
         kompetensi_id: materi ? String(materi.kompetensi_id) : '',
         judul: materi?.judul ?? '',
+        level: materi?.level ?? 1,
+        nilai_minimal: materi?.nilai_minimal ?? 75,
         langkah:
             materi?.langkah ??
             judulLangkah.map(() => ({ konten_teks: '', media: [] })),
@@ -191,6 +198,60 @@ export default function MateriForm({
                                     ))}
                                 </SelectContent>
                             </Select>
+                        </FormField>
+                        <FormField
+                            label="Level materi"
+                            error={errors.level}
+                            wajib
+                            hint="Siswa yang lulus kuis materi ini naik ke level ini pada kompetensinya."
+                        >
+                            <div
+                                className="grid grid-cols-4 gap-1.5"
+                                role="radiogroup"
+                                aria-label="Level materi"
+                            >
+                                {[1, 2, 3, 4].map((n) => (
+                                    <button
+                                        key={n}
+                                        type="button"
+                                        role="radio"
+                                        aria-checked={data.level === n}
+                                        title={namaLevel(n)}
+                                        onClick={() => setData('level', n)}
+                                        className={cn(
+                                            'h-10 rounded-lg border text-sm font-bold transition-colors',
+                                            data.level === n
+                                                ? 'border-navy-900 bg-navy-900 text-white'
+                                                : 'bg-card text-navy-800 hover:bg-navy-50',
+                                        )}
+                                    >
+                                        {n}
+                                    </button>
+                                ))}
+                            </div>
+                        </FormField>
+                        <FormField
+                            label="Nilai minimal lulus kuis"
+                            htmlFor="nilai_minimal"
+                            error={errors.nilai_minimal}
+                            wajib
+                            hint="Skor 1–100. Bawaan 75."
+                        >
+                            <Input
+                                id="nilai_minimal"
+                                type="number"
+                                inputMode="numeric"
+                                min={1}
+                                max={100}
+                                value={data.nilai_minimal}
+                                onChange={(e) =>
+                                    setData(
+                                        'nilai_minimal',
+                                        Number(e.target.value),
+                                    )
+                                }
+                                aria-invalid={!!errors.nilai_minimal}
+                            />
                         </FormField>
                     </section>
 

@@ -2,17 +2,18 @@
 
 namespace App\Support;
 
-use App\Enums\StatusKompetensi;
 use App\Models\Kompetensi;
-use App\Models\ProgresKompetensi;
+use App\Services\ProgresKompetensiService;
 
 /**
  * Bentuk satu baris peta kompetensi siswa untuk frontend.
+ *
+ * @phpstan-import-type BarisPeta from ProgresKompetensiService
  */
 final class KompetensiPresenter
 {
     /**
-     * @param  array{kompetensi: Kompetensi, progres: ProgresKompetensi|null, level: int, level_diisi: bool, gap: int, warna: string, status: StatusKompetensi}  $baris
+     * @param  BarisPeta  $baris
      * @return array<string, mixed>
      */
     public static function baris(array $baris): array

@@ -6,7 +6,7 @@ $halaman = [
     'superadmin' => '/superadmin',
     'guru' => '/guru',
     'industri' => '/industri',
-    'siswa' => '/siswa',
+    'siswa' => '/siswa/mulai',
 ];
 
 test('setiap role hanya bisa membuka halamannya sendiri lewat URL langsung', function (string $role) use ($halaman) {
@@ -36,7 +36,7 @@ test('akun yang dinonaktifkan saat sedang login langsung dikeluarkan', function 
 test('data user yang dibagikan ke frontend tidak memuat kolom rahasia', function () {
     $user = User::factory()->siswa()->create();
 
-    $this->actingAs($user)->get('/siswa')
+    $this->actingAs($user)->get('/siswa/mulai')
         ->assertInertia(fn ($page) => $page
             ->where('auth.user.id', $user->id)
             ->where('auth.user.role', 'siswa')

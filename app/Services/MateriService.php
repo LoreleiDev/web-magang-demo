@@ -22,10 +22,14 @@ class MateriService
         return DB::transaction(function () use ($materi, $data, $guru) {
             $materi ??= new Materi(['dibuat_oleh' => $guru->id]);
 
+            // Materi yang diedit perlu diverifikasi ulang oleh industri (bagian 13.1 no. 2).
             $materi->fill([
                 'kompetensi_id' => $data['kompetensi_id'],
                 'judul' => $data['judul'],
+                'level' => $data['level'],
+                'nilai_minimal' => $data['nilai_minimal'],
                 'diubah_terakhir' => now(),
+                'terverifikasi_industri' => false,
             ])->save();
 
             $this->simpanLangkah($materi, $data['langkah']);

@@ -27,6 +27,7 @@ final class LogbookPresenter
             'pengetahuan_sekolah_digunakan' => $logbook->pengetahuan_sekolah_digunakan,
             'ingin_dipelajari' => $logbook->ingin_dipelajari,
             'ada_bukti' => $logbook->bukti_kegiatan !== null,
+            'url_bukti' => $logbook->bukti_kegiatan ? route('logbook.bukti', $logbook) : null,
             'sudah_dianalisis' => $logbook->hasil_analisis_ai !== null,
         ];
     }

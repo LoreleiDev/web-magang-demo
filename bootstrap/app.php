@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnsurePendampinganDimulai;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\HandleInertiaRequests;
 use Illuminate\Foundation\Application;
@@ -22,7 +23,13 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'role' => EnsureRole::class,
+            'pendampingan' => EnsurePendampinganDimulai::class,
         ]);
+
+        // Halaman siswa mengarah ke login khusus siswa.
+        $middleware->redirectGuestsTo(
+            fn (Request $request) => $request->is('siswa', 'siswa/*') ? route('siswa.login') : route('login'),
+        );
 
         // Pengguna yang sudah login dan membuka /login diarahkan ke halaman role-nya.
         $middleware->redirectUsersTo(

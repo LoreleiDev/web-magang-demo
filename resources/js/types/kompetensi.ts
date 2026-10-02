@@ -65,6 +65,7 @@ export type Logbook = {
     pengetahuan_sekolah_digunakan: string | null;
     ingin_dipelajari: string | null;
     ada_bukti: boolean;
+    url_bukti?: string | null;
     sudah_dianalisis: boolean;
 };
 

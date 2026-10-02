@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
@@ -30,10 +31,14 @@ class LoginRequest extends FormRequest
 
     /**
      * Cocokkan email + password, tolak akun nonaktif, dan batasi percobaan login.
+     * Siswa memakai halaman login khusus (keputusan 13 no. 18), jadi tiap halaman
+     * hanya menerima role tertentu.
+     *
+     * @param  list<Role>  $roleDiizinkan
      *
      * @throws ValidationException
      */
-    public function authenticate(): void
+    public function authenticate(array $roleDiizinkan, string $pesanSalahHalaman): void
     {
         $this->pastikanTidakDibatasi();
 
@@ -54,6 +59,10 @@ class LoginRequest extends FormRequest
             throw ValidationException::withMessages([
                 'email' => 'Akun Anda sudah dinonaktifkan. Silakan hubungi admin sekolah.',
             ]);
+        }
+
+        if (! $user->hasRole(...$roleDiizinkan)) {
+            throw ValidationException::withMessages(['email' => $pesanSalahHalaman]);
         }
 
         Auth::login($user, $this->boolean('remember'));

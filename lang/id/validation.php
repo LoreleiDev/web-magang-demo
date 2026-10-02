@@ -147,6 +147,8 @@ return [
         'target_level' => 'target level',
         'level_siswa' => 'level siswa',
         'judul' => 'judul',
+        'level' => 'level',
+        'nilai_minimal' => 'nilai minimal',
         'masukan' => 'masukan',
         'tanggal' => 'tanggal',
         'aktivitas' => 'aktivitas',

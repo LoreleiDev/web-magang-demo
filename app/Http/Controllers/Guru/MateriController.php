@@ -109,6 +109,8 @@ class MateriController extends Controller
                 'id' => $materi->id,
                 'kompetensi_id' => $materi->kompetensi_id,
                 'judul' => $materi->judul,
+                'level' => $materi->level,
+                'nilai_minimal' => $materi->nilai_minimal,
                 'terverifikasi_industri' => $materi->terverifikasi_industri,
                 'langkah' => $materi->langkah->map(fn (LangkahMateri $l) => [
                     'konten_teks' => $l->konten_teks ?? '',

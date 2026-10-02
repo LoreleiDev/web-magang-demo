@@ -1,10 +1,10 @@
 <?php
 
-use App\Enums\StatusKompetensi;
 use App\Models\KelompokMagang;
 use App\Models\Kompetensi;
 use App\Models\ProgresKompetensi;
 use App\Models\User;
+use Illuminate\Support\Facades\Route;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
@@ -46,7 +46,7 @@ test('kelompok guru lain lewat URL diabaikan', function () {
             ->where('siswa', fn ($siswa) => collect($siswa)->doesntContain('id', $this->siswaLain->id)));
 });
 
-test('ringkasan: level kosong dianggap 1 sehingga gap dihitung', function () {
+test('ringkasan: level awal 1 sehingga gap dihitung', function () {
     // k1 target 3, belum diisi (level 1) -> gap 2. k2 target 2, diisi 2 -> sesuai.
     ProgresKompetensi::create(['siswa_id' => $this->siswaA->id, 'kompetensi_id' => $this->k2->id, 'level_siswa' => 2]);
 
@@ -70,49 +70,6 @@ test('guru tidak bisa membuka siswa di luar kelompoknya', function () {
     $this->actingAs($this->guru)->get(route('guru.siswa.show', $this->guruLain))->assertForbidden();
 });
 
-test('guru mengisi level dan status berpindah otomatis', function () {
-    $isi = fn (int $level) => $this->actingAs($this->guru)
-        ->put(route('guru.siswa.level', [$this->siswaA, $this->k1]), ['level_siswa' => $level]);
-
-    $isi(2)->assertSessionHasNoErrors();
-    $progres = ProgresKompetensi::where('siswa_id', $this->siswaA->id)->where('kompetensi_id', $this->k1->id)->firstOrFail();
-
-    expect($progres->level_siswa)->toBe(2)
-        ->and($progres->level_diisi_oleh)->toBe($this->guru->id)
-        ->and($progres->tanggal_level_diisi)->not->toBeNull()
-        ->and($progres->status)->toBe(StatusKompetensi::BelumDipelajari);
-
-    $isi(3);
-    expect($progres->fresh()->status)->toBe(StatusKompetensi::MenungguVerifikasi);
-
-    // Aturan sementara: turun di bawah target sebelum diverifikasi -> kembali dipraktikkan.
-    $isi(2);
-    expect($progres->fresh()->status)->toBe(StatusKompetensi::SedangDipraktikkan);
-
-    // Yang sudah terverifikasi tidak diubah guru.
-    $progres->update(['status' => StatusKompetensi::Terverifikasi]);
-    $isi(1);
-    expect($progres->fresh()->status)->toBe(StatusKompetensi::Terverifikasi);
-});
-
-test('isi level ditolak untuk siswa lain, level di luar 1-4, atau kompetensi program lain', function () {
-    $this->actingAs($this->guru)
-        ->put(route('guru.siswa.level', [$this->siswaLain, $this->k1]), ['level_siswa' => 3])
-        ->assertForbidden();
-
-    $this->actingAs($this->guru)
-        ->put(route('guru.siswa.level', [$this->siswaA, $this->k1]), ['level_siswa' => 5])
-        ->assertSessionHasErrors('level_siswa');
-
-    $kompetensiRpl = Kompetensi::factory()->create(['program_keahlian' => 'RPL']);
-    $this->actingAs($this->guru)
-        ->put(route('guru.siswa.level', [$this->siswaA, $kompetensiRpl]), ['level_siswa' => 3])
-        ->assertNotFound();
-
-    $industri = User::factory()->industri($this->kelompokA->perusahaan)->create();
-    $this->actingAs($industri)
-        ->put(route('guru.siswa.level', [$this->siswaA, $this->k1]), ['level_siswa' => 3])
-        ->assertForbidden();
-
-    expect(ProgresKompetensi::count())->toBe(0);
+test('guru tidak punya route untuk mengubah level siswa', function () {
+    expect(Route::has('guru.siswa.level'))->toBeFalse();
 });

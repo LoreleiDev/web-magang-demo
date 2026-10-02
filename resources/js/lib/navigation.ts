@@ -2,6 +2,8 @@ import type { LucideIcon } from 'lucide-react';
 import {
     BookOpen,
     Building2,
+    ChartColumn,
+    Map as MapIcon,
     ClipboardCheck,
     FileText,
     GraduationCap,
@@ -103,12 +105,19 @@ export function navigasiUntuk(role: Role): NavItem[] {
         case 'industri':
             return [
                 {
-                    title: 'Dashboard',
+                    title: 'Siswa Magang',
                     href: industri.dashboard().url,
                     icon: LayoutDashboard,
                     exact: true,
                 },
+                {
+                    title: 'Verifikasi Materi',
+                    href: industri.materi.index().url,
+                    icon: BookOpen,
+                },
             ];
+        // Urutan menentukan bottom nav: 4 menu pertama tampil, sisanya di "Lainnya".
+        // AI Mentor ditambahkan sebagai chatbot mengambang di Tahap 6.
         case 'siswa':
             return [
                 {
@@ -116,6 +125,36 @@ export function navigasiUntuk(role: Role): NavItem[] {
                     href: siswa.dashboard().url,
                     icon: LayoutDashboard,
                     exact: true,
+                },
+                {
+                    title: 'Belajar',
+                    href: siswa.belajar.index().url,
+                    icon: BookOpen,
+                },
+                {
+                    title: 'Logbook',
+                    href: siswa.logbook.index().url,
+                    icon: NotebookPen,
+                },
+                {
+                    title: 'Learning Gap',
+                    href: siswa.gap().url,
+                    icon: Target,
+                },
+                {
+                    title: 'Peta Kompetensi',
+                    href: siswa.peta().url,
+                    icon: MapIcon,
+                },
+                {
+                    title: 'Assessment',
+                    href: siswa.assessment().url,
+                    icon: ClipboardCheck,
+                },
+                {
+                    title: 'Progress',
+                    href: siswa.progress().url,
+                    icon: ChartColumn,
                 },
             ];
     }
