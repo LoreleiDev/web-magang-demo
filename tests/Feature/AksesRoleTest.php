@@ -27,7 +27,7 @@ test('akun yang dinonaktifkan saat sedang login langsung dikeluarkan', function 
     $user->update(['status_aktif' => false]);
 
     $this->actingAs($user)->get('/guru')
-        ->assertRedirect(route('login'))
+        ->assertRedirect(route('login.guru'))
         ->assertSessionHasErrors('email');
 
     $this->assertGuest();

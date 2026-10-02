@@ -49,20 +49,47 @@ test('pertama kali: unit kerja wajib dari daftar; setelah itu dashboard terbuka'
     $this->actingAs($this->siswa)->get(route('siswa.dashboard'))->assertOk();
 });
 
-test('unit kerja tidak bisa diganti setelah dipilih, kompetensi bisa', function () {
-    $this->siswa->profilSiswa->update(['unit_kerja' => 'NOC']);
-    $lain = Kompetensi::factory()->create(['program_keahlian' => 'TKJ']);
+test('pilihan disimpan permanen: login berikutnya langsung ke Dashboard tanpa memilih ulang', function () {
+    siswaSiap($this->siswa, $this->kompetensi->id);
 
-    $this->actingAs($this->siswa)
-        ->post(route('siswa.mulai.store'), ['unit_kerja' => 'Helpdesk', 'kompetensi_id' => $lain->id])
-        ->assertSessionHasErrors('unit_kerja');
+    $this->actingAs($this->siswa)->get(route('siswa.mulai'))->assertRedirect(route('siswa.dashboard'));
 
-    $this->actingAs($this->siswa)
-        ->post(route('siswa.mulai.store'), ['kompetensi_id' => $lain->id])
+    $this->post(route('logout'));
+    $this->post(route('login.store'), ['email' => $this->siswa->email, 'password' => 'password'])
         ->assertRedirect(route('siswa.dashboard'));
+    $this->get(route('siswa.dashboard'))->assertOk();
+});
 
-    expect($this->siswa->profilSiswa->fresh()->unit_kerja)->toBe('NOC')
-        ->and($this->siswa->profilSiswa->fresh()->kompetensi_fokus_id)->toBe($lain->id);
+test('kompetensi utama diganti dari Peta Kompetensi, progres tidak berubah', function () {
+    siswaSiap($this->siswa, $this->kompetensi->id);
+    $lain = Kompetensi::factory()->create(['program_keahlian' => 'TKJ']);
+    $rpl = Kompetensi::factory()->create(['program_keahlian' => 'RPL']);
+
+    $this->actingAs($this->siswa)->get(route('siswa.peta'))
+        ->assertInertia(fn (Assert $page) => $page->where('kompetensiUtamaId', $this->kompetensi->id));
+
+    $this->actingAs($this->siswa)
+        ->put(route('siswa.kompetensi-utama'), ['kompetensi_id' => $lain->id])
+        ->assertSessionHasNoErrors();
+    expect($this->siswa->profilSiswa->fresh()->kompetensi_fokus_id)->toBe($lain->id);
+
+    $this->actingAs($this->siswa)
+        ->put(route('siswa.kompetensi-utama'), ['kompetensi_id' => $rpl->id])
+        ->assertSessionHasErrors('kompetensi_id');
+});
+
+test('unit kerja bisa diganti kapan saja, hanya dari daftar perusahaan', function () {
+    siswaSiap($this->siswa, $this->kompetensi->id);
+    $this->siswa->profilSiswa->update(['unit_kerja' => 'NOC']);
+
+    $this->actingAs($this->siswa)
+        ->put(route('siswa.unit-kerja'), ['unit_kerja' => 'Helpdesk'])
+        ->assertSessionHasNoErrors();
+    expect($this->siswa->profilSiswa->fresh()->unit_kerja)->toBe('Helpdesk');
+
+    $this->actingAs($this->siswa)
+        ->put(route('siswa.unit-kerja'), ['unit_kerja' => 'Gudang'])
+        ->assertSessionHasErrors('unit_kerja');
 });
 
 test('kompetensi harus dari program keahlian siswa', function () {
@@ -85,7 +112,6 @@ test('siswa yang belum masuk kelompok melihat pesan dan tidak bisa memulai', fun
         ->assertForbidden();
 
     $this->actingAs($tanpaKelompok)
-        ->withSession(['pendampingan.kompetensi_id' => $this->kompetensi->id])
         ->get(route('siswa.dashboard'))
         ->assertRedirect(route('siswa.mulai'));
 });

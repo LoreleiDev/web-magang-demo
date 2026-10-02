@@ -1,4 +1,4 @@
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, useForm } from '@inertiajs/react';
 import {
     ArrowRight,
     Building2,
@@ -22,7 +22,7 @@ import {
     SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { logout } from '@/routes';
+import { konfirmasiKeluar } from '@/lib/konfirmasi-keluar';
 import siswa from '@/routes/siswa';
 import type { BarisKompetensi } from '@/types/kompetensi';
 import type { KonteksSiswa } from '@/types/siswa';
@@ -67,14 +67,14 @@ export default function MulaiPendampingan({
                 <header className="bg-navy-900 tekstur-titik px-4 pt-6 pb-24 text-white sm:px-8">
                     <div className="mx-auto flex max-w-3xl items-center justify-between">
                         <AppLogo tone="terang" />
-                        <Link
-                            href={logout()}
-                            as="button"
+                        <button
+                            type="button"
+                            onClick={() => void konfirmasiKeluar()}
                             className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-navy-200 hover:bg-white/10 hover:text-white"
                         >
                             <LogOut className="size-4" />
                             Keluar
-                        </Link>
+                        </button>
                     </div>
                     <div className="mx-auto mt-10 max-w-3xl">
                         <p className="text-xs font-bold tracking-[0.2em] text-hijau-500 uppercase">
@@ -84,8 +84,8 @@ export default function MulaiPendampingan({
                             Halo, {konteks.nama}
                         </h1>
                         <p className="mt-2 max-w-xl text-navy-200">
-                            Periksa data magang Anda, lalu pilih kompetensi yang
-                            ingin Anda jalani hari ini.
+                            Periksa data magang Anda, lalu pilih unit kerja dan
+                            kompetensi utama. Cukup sekali saja.
                         </p>
                     </div>
                 </header>
@@ -158,8 +158,9 @@ export default function MulaiPendampingan({
                                 ) : (
                                     <>
                                         <p className="text-xs text-muted-foreground">
-                                            Dipilih sekali saja. Pilih bagian
-                                            tempat Anda ditempatkan.
+                                            Pilih bagian tempat Anda
+                                            ditempatkan. Bisa diganti nanti dari
+                                            Dashboard.
                                         </p>
                                         <Select
                                             value={form.data.unit_kerja}
@@ -198,11 +199,12 @@ export default function MulaiPendampingan({
 
                             <section>
                                 <h2 className="text-sm font-bold text-navy-900">
-                                    Kompetensi yang ingin dijalani
+                                    Kompetensi utama
                                 </h2>
                                 <p className="text-xs text-muted-foreground">
-                                    Kompetensi ini menjadi fokus di Dashboard
-                                    Anda. Bisa diganti setiap kali masuk.
+                                    Kompetensi yang ingin Anda dalami. Materinya
+                                    tampil paling atas dan bisa diganti nanti di
+                                    Peta Kompetensi.
                                 </p>
                                 {kompetensi.length === 0 ? (
                                     <p className="mt-3 rounded-2xl bg-navy-50 px-4 py-3 text-sm text-navy-700">

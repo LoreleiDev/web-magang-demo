@@ -1,4 +1,3 @@
-import { Link } from '@inertiajs/react';
 import { LogOut } from 'lucide-react';
 import {
     DropdownMenu,
@@ -9,7 +8,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn, inisial } from '@/lib/utils';
-import { logout } from '@/routes';
+import { konfirmasiKeluar } from '@/lib/konfirmasi-keluar';
 import type { User } from '@/types';
 
 export function UserAvatar({
@@ -56,11 +55,12 @@ export function UserMenu({ user }: { user: User }) {
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild className="rounded-lg px-2.5 py-2">
-                    <Link href={logout()} as="button" className="w-full">
-                        <LogOut />
-                        Keluar
-                    </Link>
+                <DropdownMenuItem
+                    className="rounded-lg px-2.5 py-2"
+                    onSelect={() => void konfirmasiKeluar()}
+                >
+                    <LogOut />
+                    Keluar
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

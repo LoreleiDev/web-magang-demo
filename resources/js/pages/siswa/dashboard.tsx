@@ -10,6 +10,7 @@ import {
     Target,
 } from 'lucide-react';
 import { BadgeVerifikasi } from '@/components/badge-verifikasi';
+import { GantiUnitKerja } from '@/components/ganti-unit-kerja';
 import {
     GapBadge,
     LevelBar,
@@ -32,6 +33,7 @@ type Aktivitas = {
 
 type Props = {
     konteks: KonteksSiswa;
+    daftarUnitKerja: string[];
     ringkasan: RingkasanProgres;
     fokus: BarisKompetensi | null;
     kompetensiGap: BarisKompetensi[];
@@ -67,6 +69,7 @@ export default function SiswaDashboard({
     aktivitasHariIni,
     rekomendasi,
     logbookTerakhir,
+    daftarUnitKerja,
 }: Props) {
     return (
         <>
@@ -82,7 +85,11 @@ export default function SiswaDashboard({
                 <p className="mt-2 flex items-start gap-2 text-sm text-muted-foreground">
                     <Building2 className="mt-0.5 size-4 shrink-0 text-navy-400" />
                     <span>
-                        {konteks.perusahaan} · {konteks.unit_kerja}
+                        {konteks.perusahaan} · {konteks.unit_kerja}{' '}
+                        <GantiUnitKerja
+                            sekarang={konteks.unit_kerja}
+                            daftar={daftarUnitKerja}
+                        />
                     </span>
                 </p>
             </header>
@@ -148,10 +155,10 @@ export default function SiswaDashboard({
                             <div className="flex items-center justify-between gap-3">
                                 <p className="flex items-center gap-1.5 text-xs font-bold text-navy-500">
                                     <Target className="size-4" /> Kompetensi
-                                    yang Anda jalani
+                                    utama Anda
                                 </p>
                                 <Link
-                                    href={siswa.mulai().url}
+                                    href={siswa.peta().url}
                                     className="flex items-center gap-1 text-xs font-semibold text-navy-600 hover:text-navy-900"
                                 >
                                     <RefreshCw className="size-3.5" /> Ganti

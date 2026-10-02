@@ -35,4 +35,14 @@ return [
         ],
     ],
 
+    // AI Mentor (CLAUDE.md bagian 9). Key hanya dari .env, tidak pernah ke frontend.
+    'gemini' => [
+        'key' => env('GEMINI_API_KEY'),
+        'model' => env('GEMINI_MODEL', 'gemini-3.5-flash'),
+        // Dipakai jika model utama sibuk (HTTP 503/429).
+        'model_cadangan' => env('GEMINI_MODEL_CADANGAN', 'gemini-3.5-flash-lite'),
+        'base_url' => 'https://generativelanguage.googleapis.com',
+        'timeout' => (int) env('GEMINI_TIMEOUT', 60),
+    ],
+
 ];

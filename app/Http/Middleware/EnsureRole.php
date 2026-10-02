@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\Role;
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,7 @@ class EnsureRole
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            return redirect()->route('login')->withErrors([
+            return redirect()->route(AuthenticatedSessionController::routeLogin($user->role))->withErrors([
                 'email' => 'Akun Anda sudah dinonaktifkan. Silakan hubungi admin sekolah.',
             ]);
         }

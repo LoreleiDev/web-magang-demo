@@ -39,8 +39,8 @@ beforeEach(function () {
     $this->siswa = User::factory()->siswa($this->kelompok, 'TKJ', 'Jaringan')->create();
     $this->kompetensi = Kompetensi::factory()->create(['program_keahlian' => 'TKJ', 'target_level' => 3]);
 
-    $this->masuk = fn () => $this->actingAs($this->siswa)
-        ->withSession(['pendampingan.kompetensi_id' => $this->kompetensi->id]);
+    siswaSiap($this->siswa, $this->kompetensi->id);
+    $this->masuk = fn () => $this->actingAs($this->siswa);
 });
 
 test('membuka materi menandai kompetensi "Sedang dipelajari" tanpa mengirim kunci jawaban', function () {

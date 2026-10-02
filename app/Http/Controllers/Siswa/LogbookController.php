@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Siswa;
 
+use App\Exceptions\AiMentorException;
 use App\Http\Controllers\Controller;
 use App\Models\Logbook;
+use App\Services\AiMentorService;
 use App\Support\LogbookPresenter;
 use Closure;
 use Illuminate\Http\RedirectResponse;
@@ -37,6 +39,7 @@ class LogbookController extends Controller
                 ->map(fn (Logbook $l) => [
                     ...LogbookPresenter::baris($l),
                     'nama_bukti' => $l->bukti_kegiatan ? basename($l->bukti_kegiatan) : null,
+                    'hasil_analisis_ai' => $l->hasil_analisis_ai,
                 ]),
             'hariIni' => now()->toDateString(),
         ]);
@@ -115,6 +118,26 @@ class LogbookController extends Controller
             'bukti_kegiatan.extensions' => 'Bukti kegiatan harus berupa gambar (JPG/PNG/WEBP) atau PDF.',
             'bukti_kegiatan.max' => 'Ukuran bukti kegiatan maksimal 5 MB.',
         ]);
+    }
+
+    /**
+     * Tombol "Analisis dengan AI" (bagian 6.6 & 9.5). Hasil JSON divalidasi lalu
+     * disimpan di `hasil_analisis_ai`; kegagalan ditampilkan sebagai pesan ramah.
+     */
+    public function analisis(Logbook $logbook, AiMentorService $ai): RedirectResponse
+    {
+        Gate::authorize('update', $logbook);
+        Gate::authorize('gunakan-ai-mentor');
+
+        try {
+            $logbook->update(['hasil_analisis_ai' => $ai->analisisLogbook($logbook)]);
+        } catch (AiMentorException $e) {
+            return back()->withErrors(['analisis' => $e->getMessage()]);
+        }
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => 'Analisis AI selesai.']);
+
+        return back();
     }
 
     private function simpanBukti(Request $request, Logbook $logbook): void

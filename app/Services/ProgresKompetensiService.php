@@ -88,6 +88,31 @@ class ProgresKompetensiService
     }
 
     /**
+     * Kompetensi yang paling dikuasai siswa (keputusan 13 no. 30): level tertinggi,
+     * lalu yang sudah terverifikasi, lalu yang naik level paling akhir. Null jika
+     * semua kompetensi masih level awal.
+     *
+     * @return array{nama: string, level: int, terverifikasi: bool}|null
+     */
+    public function palingDikuasai(User $siswa): ?array
+    {
+        $terbaik = $this->peta($siswa)
+            ->filter(fn (array $b) => $b['level'] > self::LEVEL_BAWAAN)
+            ->sortBy([
+                fn (array $a, array $b) => $b['level'] <=> $a['level'],
+                fn (array $a, array $b) => ($b['status'] === StatusKompetensi::Terverifikasi) <=> ($a['status'] === StatusKompetensi::Terverifikasi),
+                fn (array $a, array $b) => ($b['progres']?->tanggal_level_diisi?->getTimestamp() ?? 0) <=> ($a['progres']?->tanggal_level_diisi?->getTimestamp() ?? 0),
+            ])
+            ->first();
+
+        return $terbaik === null ? null : [
+            'nama' => $terbaik['kompetensi']->nama_kompetensi_sekolah,
+            'level' => $terbaik['level'],
+            'terverifikasi' => $terbaik['status'] === StatusKompetensi::Terverifikasi,
+        ];
+    }
+
+    /**
      * Siswa membuka materi -> "Sedang dipelajari" (jika belum lebih jauh).
      */
     public function tandaiMulaiBelajar(User $siswa, Kompetensi $kompetensi): ProgresKompetensi

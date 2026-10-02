@@ -38,7 +38,7 @@ export default function GuruDashboard({
             <PageHeader
                 eyebrow="Dashboard Guru Pembimbing"
                 title={`Halo, ${auth.user?.name}`}
-                description="Pantau siswa di kelompok magang yang Anda bimbing dan isi level kompetensinya."
+                description="Pantau progres, learning gap, dan kompetensi siswa di kelompok magang yang Anda bimbing."
             />
 
             {kelompok.length === 0 ? (

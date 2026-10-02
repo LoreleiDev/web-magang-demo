@@ -1,23 +1,33 @@
 import { HalamanLogin } from '@/components/halaman-login';
-import { store } from '@/routes/login';
-import siswa from '@/routes/siswa';
+import type { Role } from '@/types';
+
+const eyebrow: Record<Role, string> = {
+    siswa: 'Login siswa PKL',
+    guru: 'Login guru pembimbing',
+    industri: 'Login pembimbing industri',
+    superadmin: 'Login admin sekolah',
+};
 
 /**
- * Login guru, pembimbing industri, dan admin sekolah.
+ * Satu halaman untuk keempat URL login (keputusan 13 no. 32). Server menentukan
+ * role (`portal`) dan alamat kirimnya.
  */
-export default function Login() {
+export default function Login({
+    portal,
+    judul,
+    aksi,
+}: {
+    portal: Role;
+    judul: string;
+    aksi: string;
+}) {
     return (
         <HalamanLogin
-            judulTab="Masuk"
-            eyebrow="Guru · Industri · Admin sekolah"
-            judul="Masuk ke akun Anda"
+            judulTab={judul}
+            eyebrow={eyebrow[portal]}
+            judul={judul}
             deskripsi="Gunakan email dan kata sandi yang diberikan sekolah."
-            aksi={store.form()}
-            tautanLain={{
-                href: siswa.login().url,
-                teks: 'Anda siswa?',
-                label: 'Masuk di Login Siswa',
-            }}
+            aksi={aksi}
         />
     );
 }

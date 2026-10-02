@@ -1,4 +1,4 @@
-import { Head, useForm } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
 import {
     FileText,
     LoaderCircle,
@@ -6,10 +6,13 @@ import {
     Paperclip,
     Pencil,
     Plus,
+    Sparkles,
     X,
 } from 'lucide-react';
 import type { FormEvent } from 'react';
 import { useRef, useState } from 'react';
+import type { HasilAnalisis } from '@/components/ai-mentor/hasil-analisis';
+import { HasilAnalisisAi } from '@/components/ai-mentor/hasil-analisis';
 import { EmptyState } from '@/components/empty-state';
 import { FormField } from '@/components/form-field';
 import { PageHeader } from '@/components/page-header';
@@ -24,6 +27,7 @@ import type { Logbook } from '@/types/kompetensi';
 type LogbookSiswa = Logbook & {
     url_bukti: string | null;
     nama_bukti: string | null;
+    hasil_analisis_ai: HasilAnalisis | null;
 };
 
 type DataForm = {
@@ -415,10 +419,70 @@ export default function LogbookSiswaPage({
                                     Lihat bukti kegiatan
                                 </a>
                             )}
+                            <AnalisisLogbook logbook={l} />
                         </li>
                     ))}
                 </ul>
             )}
         </>
+    );
+}
+
+/**
+ * Tombol "Analisis dengan AI" (bagian 6.6) + hasilnya. Pesan gagal dari backend
+ * ditampilkan di bawah tombol.
+ */
+function AnalisisLogbook({ logbook }: { logbook: LogbookSiswa }) {
+    const { errors } = usePage().props;
+    const [proses, setProses] = useState(false);
+    const [aktif, setAktif] = useState(false);
+    const pesanError = aktif
+        ? (errors as Record<string, string>).analisis
+        : undefined;
+
+    const analisis = () =>
+        router.post(
+            siswa.logbook.analisis(logbook.id).url,
+            {},
+            {
+                preserveScroll: true,
+                onStart: () => {
+                    setProses(true);
+                    setAktif(true);
+                },
+                onFinish: () => setProses(false),
+            },
+        );
+
+    return (
+        <div className="mt-3">
+            {logbook.hasil_analisis_ai && (
+                <HasilAnalisisAi hasil={logbook.hasil_analisis_ai} />
+            )}
+            <Button
+                type="button"
+                variant={logbook.hasil_analisis_ai ? 'outline' : 'aksen'}
+                size="sm"
+                className="mt-3"
+                disabled={proses}
+                onClick={analisis}
+            >
+                {proses ? (
+                    <LoaderCircle className="animate-spin" />
+                ) : (
+                    <Sparkles />
+                )}
+                {proses
+                    ? 'AI sedang menganalisis…'
+                    : logbook.hasil_analisis_ai
+                      ? 'Analisis ulang dengan AI'
+                      : 'Analisis dengan AI'}
+            </Button>
+            {pesanError && (
+                <p className="mt-2 text-sm font-medium text-destructive">
+                    {pesanError}
+                </p>
+            )}
+        </div>
     );
 }

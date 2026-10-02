@@ -15,8 +15,8 @@ beforeEach(function () {
     $this->siswa = User::factory()->siswa($this->kelompok, 'TKJ', 'Jaringan')->create();
     $kompetensi = Kompetensi::factory()->create(['program_keahlian' => 'TKJ']);
 
-    $this->masuk = fn (?User $s = null) => $this->actingAs($s ?? $this->siswa)
-        ->withSession(['pendampingan.kompetensi_id' => $kompetensi->id]);
+    siswaSiap($this->siswa, $kompetensi->id);
+    $this->masuk = fn (?User $s = null) => $this->actingAs($s === null ? $this->siswa : siswaSiap($s, $kompetensi->id));
 });
 
 function isiLogbook(array $timpa = []): array

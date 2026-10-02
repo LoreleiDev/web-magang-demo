@@ -43,7 +43,7 @@ class BelajarController extends Controller
                     ])->values(),
                 ];
             })->values(),
-            'fokusId' => $request->session()->get('pendampingan.kompetensi_id'),
+            'fokusId' => $siswa->profilSiswa?->kompetensi_fokus_id,
         ]);
     }
 

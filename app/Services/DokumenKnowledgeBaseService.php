@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Enums\JenisDokumen;
+use App\Jobs\HapusDokumenAi;
+use App\Jobs\SinkronDokumenKnowledgeBase;
 use App\Models\DokumenKnowledgeBase;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
@@ -11,8 +13,8 @@ use Illuminate\Support\Facades\Storage;
 /**
  * Menyimpan & menghapus dokumen knowledge base AI Mentor (CLAUDE.md bagian 9.3).
  *
- * Tahap 2-3: file hanya disimpan di server (disk privat "local").
- * Tahap 6: dokumen juga diteruskan ke Gemini dan id-nya disimpan di `id_di_layanan_ai`.
+ * File disimpan di disk privat "local", lalu diteruskan ke Gemini File Search lewat
+ * queue (SinkronDokumenKnowledgeBase); nama dokumennya disimpan di `id_di_layanan_ai`.
  */
 class DokumenKnowledgeBaseService
 {
@@ -34,6 +36,10 @@ class DokumenKnowledgeBaseService
 
     public function hapus(DokumenKnowledgeBase $dokumen): void
     {
+        if ($dokumen->id_di_layanan_ai !== null) {
+            HapusDokumenAi::dispatch($dokumen->id_di_layanan_ai)->afterCommit();
+        }
+
         Storage::disk(self::DISK)->delete($dokumen->path_file);
 
         $dokumen->delete();
@@ -51,12 +57,18 @@ class DokumenKnowledgeBaseService
     {
         $path = $file->store($folder, self::DISK);
 
-        return DokumenKnowledgeBase::create([
+        $dokumen = DokumenKnowledgeBase::create([
             'jenis' => $jenis,
             ...$cakupan,
             'nama_file' => $file->getClientOriginalName(),
             'path_file' => $path,
             'diunggah_oleh' => $pengunggah->id,
+            'status_ai' => 'menunggu',
         ]);
+
+        // Diteruskan ke Gemini File Search lewat queue (bagian 9.3).
+        SinkronDokumenKnowledgeBase::dispatch($dokumen)->afterCommit();
+
+        return $dokumen;
     }
 }

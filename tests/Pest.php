@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ProgramKeahlian;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -35,6 +36,19 @@ pest()->extend(TestCase::class)
 | to assert different things. Of course, you may extend the Expectation API at any time.
 |
 */
+
+/**
+ * Tandai siswa sudah menyelesaikan Mulai Pendampingan (unit kerja + kompetensi utama).
+ */
+function siswaSiap(User $siswa, int $kompetensiId): User
+{
+    $siswa->profilSiswa->update([
+        'unit_kerja' => $siswa->profilSiswa->unit_kerja ?? 'Jaringan',
+        'kompetensi_fokus_id' => $kompetensiId,
+    ]);
+
+    return $siswa;
+}
 
 expect()->extend('toBeOne', function () {
     return $this->toBe(1);

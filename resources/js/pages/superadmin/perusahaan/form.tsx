@@ -13,6 +13,8 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { FormField, FormSection } from '@/components/form-field';
 import { PageHeader } from '@/components/page-header';
 import { PilihFile } from '@/components/pilih-file';
+import { StatusDokumenAi } from '@/components/status-dokumen-ai';
+import type { StatusAi } from '@/components/status-dokumen-ai';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,6 +34,8 @@ type Dokumen = {
     nama_file: string;
     diunggah_oleh: string;
     diunggah_pada: string | null;
+    status_ai: StatusAi;
+    pesan_error_ai: string | null;
 };
 
 type AturanDokumen = { ekstensi: string[]; maks_kb: number };
@@ -328,6 +332,12 @@ function DokumenIndustri({
                                             {formatTanggalWaktu(
                                                 d.diunggah_pada,
                                             )}
+                                        </div>
+                                        <div className="mt-1.5">
+                                            <StatusDokumenAi
+                                                status={d.status_ai}
+                                                pesanError={d.pesan_error_ai}
+                                            />
                                         </div>
                                     </div>
                                     <Button

@@ -12,37 +12,63 @@ use Inertia\Inertia;
 use Inertia\Response;
 
 /**
- * Login email + password untuk superadmin, guru, dan industri. Siswa memakai
- * halaman login khusus (SiswaLoginController). Tidak ada registrasi mandiri.
+ * Login terpisah per role (keputusan 13 no. 32): `/login` siswa, `/login/guru`,
+ * `/login/industri`, `/login/admin`. Setiap halaman hanya menerima role-nya.
+ * Tidak ada registrasi mandiri.
  */
 class AuthenticatedSessionController extends Controller
 {
-    public function create(): Response
+    public function create(Request $request): Response
     {
-        return Inertia::render('auth/login');
+        $role = $this->role($request);
+
+        return Inertia::render('auth/login', [
+            'portal' => $role->value,
+            'judul' => match ($role) {
+                Role::Siswa => 'Masuk sebagai siswa',
+                Role::Guru => 'Masuk sebagai guru pembimbing',
+                Role::Industri => 'Masuk sebagai pembimbing industri',
+                Role::Superadmin => 'Masuk sebagai admin sekolah',
+            },
+            'aksi' => route($this->routeLogin($role).'.store'),
+        ]);
     }
 
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate(
-            [Role::Superadmin, Role::Guru, Role::Industri],
-            'Akun siswa masuk lewat halaman Login Siswa.',
-        );
+        $role = $this->role($request);
+
+        $request->authenticate([$role], 'Email atau kata sandi salah.');
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route($request->user()->role->homeRoute()));
+        return redirect()->intended(route($role->homeRoute()));
     }
 
     public function destroy(Request $request): RedirectResponse
     {
-        $siswa = $request->user()?->hasRole(Role::Siswa) ?? false;
+        $role = $request->user()->role;
 
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route($siswa ? 'siswa.login' : 'login');
+        return redirect()->route($this->routeLogin($role));
+    }
+
+    public static function routeLogin(Role $role): string
+    {
+        return match ($role) {
+            Role::Siswa => 'login',
+            Role::Guru => 'login.guru',
+            Role::Industri => 'login.industri',
+            Role::Superadmin => 'login.admin',
+        };
+    }
+
+    private function role(Request $request): Role
+    {
+        return Role::from((string) $request->route('portal', Role::Siswa->value));
     }
 }

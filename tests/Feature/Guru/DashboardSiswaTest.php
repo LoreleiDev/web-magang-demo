@@ -73,3 +73,40 @@ test('guru tidak bisa membuka siswa di luar kelompoknya', function () {
 test('guru tidak punya route untuk mengubah level siswa', function () {
     expect(Route::has('guru.siswa.level'))->toBeFalse();
 });
+
+test('kartu siswa menampilkan kompetensi utama dan yang paling dikuasai', function () {
+    siswaSiap($this->siswaA, $this->k2->id);
+    ProgresKompetensi::create(['siswa_id' => $this->siswaA->id, 'kompetensi_id' => $this->k1->id, 'level_siswa' => 3, 'tanggal_level_diisi' => now()]);
+    ProgresKompetensi::create(['siswa_id' => $this->siswaA->id, 'kompetensi_id' => $this->k2->id, 'level_siswa' => 2, 'tanggal_level_diisi' => now()]);
+
+    $this->actingAs($this->guru)
+        ->get(route('guru.dashboard', ['kelompok' => $this->kelompokA->id]))
+        ->assertInertia(fn (Assert $page) => $page
+            ->where('siswa.0.kompetensi_utama', $this->k2->nama_kompetensi_sekolah)
+            ->where('siswa.0.paling_dikuasai.nama', $this->k1->nama_kompetensi_sekolah)
+            ->where('siswa.0.paling_dikuasai.level', 3));
+
+    // Belum ada yang naik level -> null.
+    $this->actingAs($this->guru)
+        ->get(route('guru.dashboard', ['kelompok' => $this->kelompokB->id]))
+        ->assertInertia(fn (Assert $page) => $page->where('siswa.0.paling_dikuasai', null));
+});
+
+test('rekap kelompok berisi learning gap & progres semua siswa kelompok yang dibimbing saja', function () {
+    $this->actingAs($this->guru)
+        ->get(route('guru.rekap', ['kelompok' => $this->kelompokA->id]))
+        ->assertInertia(fn (Assert $page) => $page
+            ->component('guru/rekap')
+            ->has('kelompok', 2)
+            ->has('program.0.kompetensi', 2)
+            ->has('program.0.siswa', 1)
+            ->where('program.0.siswa.0.nama', 'Andi')
+            ->where("program.0.siswa.0.sel.{$this->k1->id}.gap", 2));
+
+    // Kelompok guru lain lewat URL diabaikan.
+    $this->actingAs($this->guru)
+        ->get(route('guru.rekap', ['kelompok' => $this->kelompokLain->id]))
+        ->assertInertia(fn (Assert $page) => $page->whereNot('kelompokTerpilih', $this->kelompokLain->id));
+
+    $this->actingAs(User::factory()->industri()->create())->get(route('guru.rekap'))->assertForbidden();
+});

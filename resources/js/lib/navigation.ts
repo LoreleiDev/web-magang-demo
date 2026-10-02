@@ -7,6 +7,7 @@ import {
     ClipboardCheck,
     FileText,
     GraduationCap,
+    Grid3x3,
     Target,
     LayoutDashboard,
     NotebookPen,
@@ -85,6 +86,11 @@ export function navigasiUntuk(role: Role): NavItem[] {
                     href: guru.dashboard().url,
                     icon: LayoutDashboard,
                     exact: true,
+                },
+                {
+                    title: 'Rekap Kelompok',
+                    href: guru.rekap().url,
+                    icon: Grid3x3,
                 },
                 {
                     title: 'Kompetensi',

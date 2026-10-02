@@ -8,11 +8,7 @@ import {
 } from '@/components/kompetensi-indikator';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
-import {
-    Tooltip,
-    TooltipContent,
-    TooltipTrigger,
-} from '@/components/ui/tooltip';
+import { bukaAiMentor } from '@/lib/ai-mentor';
 import { cn } from '@/lib/utils';
 import siswa from '@/routes/siswa';
 import type { BarisKompetensi } from '@/types/kompetensi';
@@ -143,22 +139,18 @@ export default function LearningGap({
                                             Materi belum tersedia
                                         </Button>
                                     )}
-                                    <Tooltip>
-                                        <TooltipTrigger asChild>
-                                            <span tabIndex={0}>
-                                                <Button
-                                                    variant="outline"
-                                                    disabled
-                                                >
-                                                    <MessagesSquare />
-                                                    Tanya AI Mentor
-                                                </Button>
-                                            </span>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                            AI Mentor segera tersedia
-                                        </TooltipContent>
-                                    </Tooltip>
+                                    <Button
+                                        variant="outline"
+                                        onClick={() =>
+                                            bukaAiMentor({
+                                                kompetensiId: k.kompetensi_id,
+                                                nama: k.nama_kompetensi_sekolah,
+                                            })
+                                        }
+                                    >
+                                        <MessagesSquare />
+                                        Tanya AI Mentor
+                                    </Button>
                                 </div>
                             </li>
                         );

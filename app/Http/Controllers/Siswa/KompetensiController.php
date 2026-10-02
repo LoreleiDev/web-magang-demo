@@ -20,6 +20,7 @@ class KompetensiController extends Controller
             'kompetensi' => $pendampingan->peta($request->user())
                 ->map(fn (array $b) => KompetensiPresenter::baris($b))
                 ->values(),
+            'kompetensiUtamaId' => $request->user()->profilSiswa?->kompetensi_fokus_id,
         ]);
     }
 

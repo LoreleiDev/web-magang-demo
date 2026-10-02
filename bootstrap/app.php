@@ -27,9 +27,13 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         // Halaman siswa mengarah ke login khusus siswa.
-        $middleware->redirectGuestsTo(
-            fn (Request $request) => $request->is('siswa', 'siswa/*') ? route('siswa.login') : route('login'),
-        );
+        // Tamu diarahkan ke halaman login sesuai area yang dibuka (keputusan 13 no. 32).
+        $middleware->redirectGuestsTo(fn (Request $request) => route(match (true) {
+            $request->is('guru', 'guru/*') => 'login.guru',
+            $request->is('industri', 'industri/*') => 'login.industri',
+            $request->is('superadmin', 'superadmin/*') => 'login.admin',
+            default => 'login',
+        }));
 
         // Pengguna yang sudah login dan membuka /login diarahkan ke halaman role-nya.
         $middleware->redirectUsersTo(

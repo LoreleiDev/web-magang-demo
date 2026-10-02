@@ -5,6 +5,8 @@ import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
 import { PilihFile } from '@/components/pilih-file';
+import { StatusDokumenAi } from '@/components/status-dokumen-ai';
+import type { StatusAi } from '@/components/status-dokumen-ai';
 import { TanpaProgram } from '@/components/tanpa-program';
 import { Button } from '@/components/ui/button';
 import { formatTanggalWaktu } from '@/lib/format';
@@ -15,6 +17,8 @@ type Dokumen = {
     nama_file: string;
     diunggah_oleh: string;
     diunggah_pada: string | null;
+    status_ai: StatusAi;
+    pesan_error_ai: string | null;
 };
 
 export default function DokumenSekolah({
@@ -88,6 +92,12 @@ export default function DokumenSekolah({
                                             {formatTanggalWaktu(
                                                 d.diunggah_pada,
                                             )}
+                                        </div>
+                                        <div className="mt-1.5">
+                                            <StatusDokumenAi
+                                                status={d.status_ai}
+                                                pesanError={d.pesan_error_ai}
+                                            />
                                         </div>
                                     </div>
                                     <Button

@@ -20,10 +20,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string $nama_file
  * @property string $path_file
  * @property int $diunggah_oleh
- * @property string|null $id_di_layanan_ai
+ * @property string|null $id_di_layanan_ai Nama dokumen di Gemini File Search.
+ * @property string $status_ai menunggu | siap | gagal
+ * @property string|null $pesan_error_ai
  */
 #[Table('dokumen_knowledge_base')]
-#[Fillable(['jenis', 'program_keahlian', 'perusahaan_id', 'nama_file', 'path_file', 'diunggah_oleh', 'id_di_layanan_ai'])]
+#[Fillable(['jenis', 'program_keahlian', 'perusahaan_id', 'nama_file', 'path_file', 'diunggah_oleh', 'id_di_layanan_ai', 'status_ai', 'pesan_error_ai'])]
 class DokumenKnowledgeBase extends Model
 {
     /**

@@ -1,7 +1,5 @@
-import { Form, Head, Link } from '@inertiajs/react';
-import type { RouteFormDefinition } from '@/wayfinder';
+import { Form, Head } from '@inertiajs/react';
 import {
-    ArrowRight,
     BookOpenCheck,
     Eye,
     EyeOff,
@@ -35,7 +33,8 @@ const sorotan = [
 ];
 
 /**
- * Tampilan login bersama untuk login utama dan login siswa (keputusan 13 no. 18).
+ * Tampilan login bersama untuk semua halaman login per role (keputusan 13 no. 32).
+ * Sengaja tidak ada tautan ke halaman login role lain.
  */
 export function HalamanLogin({
     judulTab,
@@ -43,14 +42,12 @@ export function HalamanLogin({
     judul,
     deskripsi,
     aksi,
-    tautanLain,
 }: {
     judulTab: string;
     eyebrow: string;
     judul: string;
     deskripsi: string;
-    aksi: RouteFormDefinition<'post'>;
-    tautanLain: { href: string; label: string; teks: string };
+    aksi: string;
 }) {
     const [lihatSandi, setLihatSandi] = useState(false);
 
@@ -102,7 +99,8 @@ export function HalamanLogin({
                         </p>
 
                         <Form
-                            {...aksi}
+                            action={aksi}
+                            method="post"
                             resetOnError={['password']}
                             className="mt-8 space-y-5"
                         >
@@ -193,20 +191,7 @@ export function HalamanLogin({
                             )}
                         </Form>
 
-                        <Link
-                            href={tautanLain.href}
-                            className="mt-6 flex items-center justify-between gap-3 rounded-xl border bg-card px-4 py-3 text-sm transition-colors hover:bg-navy-50"
-                        >
-                            <span className="text-navy-700">
-                                {tautanLain.teks}{' '}
-                                <strong className="text-navy-900">
-                                    {tautanLain.label}
-                                </strong>
-                            </span>
-                            <ArrowRight className="size-4 shrink-0 text-navy-500" />
-                        </Link>
-
-                        <p className="mt-4 rounded-xl bg-navy-50 px-4 py-3 text-xs leading-relaxed text-navy-700">
+                        <p className="mt-8 rounded-xl bg-navy-50 px-4 py-3 text-xs leading-relaxed text-navy-700">
                             Akun dibuat oleh admin sekolah. Jika belum punya
                             akun atau lupa kata sandi, hubungi guru pembimbing
                             Anda.

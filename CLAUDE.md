@@ -153,6 +153,10 @@ ChatAIMentor
 
 - Login memakai **email + password** yang dibuat Superadmin. "Membuatkan email"
   berarti membuat **akun login berbasis email**, bukan membuat kotak surat email baru.
+- Halaman login terpisah per role (keputusan 13 no. 32), tanpa tautan antar
+  halaman login: `/login` siswa, `/login/guru`, `/login/industri`, `/login/admin`
+  (superadmin). Akun yang masuk di halaman yang salah ditolak.
+- Logout selalu meminta konfirmasi (SweetAlert2, keputusan 13 no. 33).
 - Setelah login, user diarahkan sesuai role:
     - `superadmin` → Panel Superadmin
     - `guru` → Dashboard Guru
@@ -170,11 +174,12 @@ Form pendampingan siswa berisi:
 - Program keahlian → terisi otomatis dari akun, terkunci
 - Nama industri → **terisi otomatis dari kelompok magang siswa, terkunci**
 - Unit/bagian kerja → dipilih siswa dari `daftar_unit_kerja` perusahaan tersebut
-  (hanya sekali; setelah itu terkunci)
-- Kompetensi yang dijalani → dipilih siswa **setiap kali login** dari kompetensi
-  program keahliannya (keputusan 13 no. 18); menjadi fokus di Dashboard
+  (dapat diganti siswa kapan saja dari Dashboard)
+- Kompetensi utama → dipilih siswa dari kompetensi program keahliannya
+  (keputusan 13 no. 30); dapat diganti nanti dari halaman Peta Kompetensi
 
-Siswa login lewat halaman khusus `/siswa/login`; halaman ini muncul setelahnya.
+Halaman ini hanya muncul sampai unit kerja dan kompetensi utama terisi; setelah
+itu siswa yang login langsung masuk ke Dashboard (keputusan 13 no. 18).
 
 Tombol: **"Mulai Pendampingan Magang"**
 
@@ -362,6 +367,8 @@ Gunakan grafik dan progress bar:
     - hasil assessment
     - status verifikasi kompetensi (hanya dilihat, verifikasi dilakukan industri)
 - **Level Kompetensi (lihat saja):** level siswa naik otomatis dari kuis (bagian 11.1).
+- **Kompetensi utama & paling dikuasai** tiap siswa tampil di kartu siswa (keputusan 13 no. 30).
+- **Rekap Kelompok:** learning gap dan progres semua siswa di kelompok yang dibimbing (keputusan 13 no. 31).
 - **Manajemen Kompetensi:** tambah dan edit kompetensi (kompetensi sekolah,
   aktivitas industri, target level) per program keahlian.
 - **Manajemen Materi:** tambah dan edit materi (8 langkah) beserta kuisnya.
@@ -424,6 +431,24 @@ dari Gemini API (cek dokumentasi Gemini terbaru untuk cara pemakaiannya):
 3. Saat siswa bertanya, backend hanya memakai dokumen yang sesuai dengan
    **program keahlian** dan **perusahaan** siswa tersebut. Dokumen perusahaan A
    tidak boleh terpakai untuk siswa di perusahaan B.
+
+#### 9.3.1 Catatan Implementasi (Tahap 6)
+
+- Memakai **Gemini File Search**: satu *File Search store* per cakupan
+  (`sekolah:{kode_program}`, `industri:{perusahaan_id}`), dicatat di tabel
+  `knowledge_base_store`. Siswa hanya dikirimi store program keahlian dan
+  perusahaannya sendiri, jadi isolasi antar perusahaan bersifat struktural.
+- Unggah ke Gemini lewat queue (`SinkronDokumenKnowledgeBase`); status dokumen
+  `menunggu | siap | gagal` ditampilkan di daftar dokumen guru dan superadmin.
+  Hapus dokumen di website juga menghapusnya dari Gemini (`HapusDokumenAi`).
+- Model diatur di `.env`: `GEMINI_MODEL` (bawaan `gemini-3.5-flash`) dan
+  `GEMINI_MODEL_CADANGAN` (bawaan `gemini-3.5-flash-lite`), dipakai jika model
+  utama sibuk (429/500/503).
+- Teks system prompt 9.4 disimpan di `resources/prompts/ai-mentor.txt`, ditambah
+  aturan format (tanpa LaTeX/tabel/heading) agar tampil rapi di chat.
+- Batas: 10 pesan AI per menit per siswa (chat + analisis logbook); riwayat chat
+  disimpan maks. 40 pesan terakhir, 12 terakhir dikirim sebagai konteks; siswa
+  dapat memulai percakapan baru.
 
 ### 9.4 System Prompt AI Mentor
 
@@ -620,7 +645,7 @@ Teknis:
 | 15  | Program keahlian                               | Dikelola superadmin (tabel `program_keahlian`: kode + nama), dipilih dari daftar di semua form dan dipakai untuk pembatasan data; kode tidak bisa diubah, program yang masih dipakai tidak bisa dihapus |
 | 16  | Hak edit kompetensi & materi                   | Guru hanya menambah/mengedit untuk program keahliannya sendiri (`ProfilGuru.program_keahlian`); belum ada fitur hapus           |
 | 17  | Superadmin melihat materi, logbook, assessment | Halaman baca-saja (read-only) di Panel Superadmin                                                                               |
-| 18  | Login & Mulai Pendampingan siswa               | Siswa login di halaman khusus `/siswa/login`; role lain di `/login`. Setelah login siswa selalu ke halaman Mulai Pendampingan untuk memilih kompetensi yang dijalani (unit kerja hanya dipilih sekali, dapat dilihat di form) |
+| 18  | Mulai Pendampingan siswa                       | Hanya sekali sampai unit kerja & kompetensi utama terisi; pilihan disimpan permanen (tidak dipilih ulang setiap login) |
 | 19  | Persentase progres siswa                       | Persentase kompetensi (program keahlian siswa) yang `level_siswa` ≥ `target_level`                                              |
 | 20  | "Aktivitas yang harus dilakukan hari ini"      | Otomatis: isi logbook hari ini jika belum; lanjutkan materi untuk gap terbesar; ulangi kuis yang skornya < 75                   |
 | 21  | Logbook                                        | Satu logbook per tanggal per siswa, dapat diedit; bukti kegiatan berupa gambar/PDF maks. 5 MB                                   |
@@ -632,6 +657,12 @@ Teknis:
 | 26  | Hapus data                                     | Kelompok tidak bisa dihapus; perusahaan yang masih dipakai kelompok/akun industri dan unit kerja yang masih dipilih siswa tidak bisa dihapus |
 | 27  | Unit kerja siswa                               | Dikosongkan (siswa memilih ulang) jika siswa pindah ke kelompok di perusahaan lain, dikeluarkan dari kelompok, atau perusahaan kelompok diganti |
 | 28  | Dokumen knowledge base                         | PDF, DOCX, atau TXT, maks. 20 MB per file |
+| 30  | Kompetensi utama & paling dikuasai             | Kompetensi utama dipilih siswa, materinya tampil paling atas di Belajar, dapat diganti di Peta Kompetensi. "Paling dikuasai" dihitung otomatis (level tertinggi > sudah terverifikasi > naik level paling akhir); keduanya tampil di dashboard guru & industri |
+| 31  | Rekap kelompok guru                            | Guru melihat learning gap (siswa × kompetensi, berwarna) dan progres semua siswa di kelompok yang ia bimbing |
+| 32  | URL login                                      | `/login` siswa, `/login/guru`, `/login/industri`, `/login/admin`; tidak ada tautan ke halaman login lain |
+| 33  | Konfirmasi logout                              | SweetAlert2 (diminta pemilik proyek), diberi gaya sesuai tema |
+| 34  | Unit kerja siswa                               | Dipilih siswa sendiri dari daftar unit kerja perusahaan dan dapat diganti kapan saja |
+| 35  | Hari magang                                    | Dihitung dalam hari kalender dari `periode_mulai` sampai `periode_selesai` kelompok |
 
 ### 13.1 Keputusan Badge Verifikasi Materi (sudah dijawab)
 

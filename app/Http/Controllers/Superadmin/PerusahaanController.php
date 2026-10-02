@@ -100,6 +100,8 @@ class PerusahaanController extends Controller
                     'nama_file' => $d->nama_file,
                     'diunggah_oleh' => $d->pengunggah->name,
                     'diunggah_pada' => $d->created_at?->toIso8601String(),
+                    'status_ai' => $d->status_ai,
+                    'pesan_error_ai' => $d->pesan_error_ai,
                 ]),
             'aturanDokumen' => config('magang.dokumen_kb'),
         ]);

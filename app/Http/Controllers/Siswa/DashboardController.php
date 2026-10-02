@@ -32,6 +32,7 @@ class DashboardController extends Controller
 
         return Inertia::render('siswa/dashboard', [
             'konteks' => $konteks,
+            'daftarUnitKerja' => $siswa->profilSiswa?->kelompok?->perusahaan->daftar_unit_kerja ?? [],
             'ringkasan' => $progres->ringkasan($siswa),
             'fokus' => $fokus ? KompetensiPresenter::baris($fokus) : null,
             'kompetensiGap' => $peta->filter(fn (array $b) => $b['gap'] > 0)

@@ -3,6 +3,7 @@ import { LogOut, Menu } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
+import { AiMentorChatbot } from '@/components/ai-mentor/chatbot';
 import { AppLogo } from '@/components/app-logo';
 import { BottomNav } from '@/components/bottom-nav';
 import { Button } from '@/components/ui/button';
@@ -19,7 +20,8 @@ import { UserAvatar, UserMenu } from '@/components/user-menu';
 import type { NavItem } from '@/lib/navigation';
 import { isNavAktif, navigasiUntuk } from '@/lib/navigation';
 import { cn } from '@/lib/utils';
-import { home, logout } from '@/routes';
+import { konfirmasiKeluar } from '@/lib/konfirmasi-keluar';
+import { home } from '@/routes';
 import type { User } from '@/types';
 
 /**
@@ -76,6 +78,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 </main>
 
                 {pakaiBottomNav && <BottomNav items={nav} url={page.url} />}
+
+                {/* AI Mentor hanya untuk siswa (bagian 2.1 & 6.5). */}
+                {user.role === 'siswa' && <AiMentorChatbot />}
 
                 <Toaster position="top-center" richColors closeButton />
             </div>
@@ -150,14 +155,17 @@ function SidebarIsi({
                         </div>
                     </div>
                 </div>
-                <Link
-                    href={logout()}
-                    as="button"
+                <button
+                    type="button"
+                    onClick={() => {
+                        onNavigate?.();
+                        void konfirmasiKeluar();
+                    }}
                     className="mt-3 flex h-9 w-full items-center justify-center gap-2 rounded-lg text-xs font-semibold text-navy-200 transition-colors hover:bg-white/10 hover:text-white"
                 >
                     <LogOut className="size-4" />
                     Keluar
-                </Link>
+                </button>
             </div>
         </div>
     );

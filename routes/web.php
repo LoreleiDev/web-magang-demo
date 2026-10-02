@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\Auth\SiswaLoginController;
 use App\Http\Controllers\Guru;
 use App\Http\Controllers\Industri;
 use App\Http\Controllers\LogbookBuktiController;
@@ -16,9 +15,14 @@ Route::get('/', function (Request $request) {
         : redirect()->route('login');
 })->name('home');
 
+// Login terpisah per role (keputusan 13 no. 32). `portal` menentukan role yang diterima.
 Route::middleware('guest')->group(function () {
-    Route::get('login', [AuthenticatedSessionController::class, 'create'])->name('login');
-    Route::post('login', [AuthenticatedSessionController::class, 'store'])->name('login.store');
+    foreach (['login' => 'siswa', 'login/guru' => 'guru', 'login/industri' => 'industri', 'login/admin' => 'superadmin'] as $uri => $portal) {
+        $nama = $portal === 'siswa' ? 'login' : 'login.'.($portal === 'superadmin' ? 'admin' : $portal);
+
+        Route::get($uri, [AuthenticatedSessionController::class, 'create'])->defaults('portal', $portal)->name($nama);
+        Route::post($uri, [AuthenticatedSessionController::class, 'store'])->defaults('portal', $portal)->name("{$nama}.store");
+    }
 });
 
 Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
@@ -51,6 +55,7 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
 Route::middleware(['auth', 'role:guru'])->prefix('guru')->name('guru.')->group(function () {
     Route::get('/', Guru\DashboardController::class)->name('dashboard');
 
+    Route::get('rekap', Guru\RekapController::class)->name('rekap');
     Route::get('siswa/{siswa}', [Guru\SiswaController::class, 'show'])->name('siswa.show');
 
     Route::resource('kompetensi', Guru\KompetensiController::class)->except(['show', 'destroy']);
@@ -74,12 +79,6 @@ Route::middleware(['auth', 'role:industri'])->prefix('industri')->name('industri
     Route::post('materi/{materi}/verifikasi', [Industri\MateriController::class, 'periksa'])->name('materi.verifikasi');
 });
 
-// Login khusus siswa (keputusan 13 no. 18).
-Route::middleware('guest')->prefix('siswa')->name('siswa.')->group(function () {
-    Route::get('login', [SiswaLoginController::class, 'create'])->name('login');
-    Route::post('login', [SiswaLoginController::class, 'store'])->name('login.store');
-});
-
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
     Route::get('mulai', [Siswa\MulaiPendampinganController::class, 'show'])->name('mulai');
     Route::post('mulai', [Siswa\MulaiPendampinganController::class, 'store'])->name('mulai.store');
@@ -96,6 +95,17 @@ Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->grou
         Route::get('logbook', [Siswa\LogbookController::class, 'index'])->name('logbook.index');
         Route::post('logbook', [Siswa\LogbookController::class, 'store'])->name('logbook.store');
         Route::put('logbook/{logbook}', [Siswa\LogbookController::class, 'update'])->name('logbook.update');
+        Route::post('logbook/{logbook}/analisis', [Siswa\LogbookController::class, 'analisis'])
+            ->middleware('throttle:ai-mentor')
+            ->name('logbook.analisis');
+
+        // AI Mentor (JSON untuk floating chatbot).
+        Route::get('mentor', [Siswa\AiMentorController::class, 'riwayat'])->name('mentor.riwayat');
+        Route::post('mentor', [Siswa\AiMentorController::class, 'kirim'])->middleware('throttle:ai-mentor')->name('mentor.kirim');
+        Route::delete('mentor', [Siswa\AiMentorController::class, 'hapus'])->name('mentor.hapus');
+
+        Route::put('kompetensi-utama', [Siswa\PengaturanPendampinganController::class, 'kompetensiUtama'])->name('kompetensi-utama');
+        Route::put('unit-kerja', [Siswa\PengaturanPendampinganController::class, 'unitKerja'])->name('unit-kerja');
 
         Route::get('assessment', Siswa\AssessmentController::class)->name('assessment');
         Route::get('progress', Siswa\ProgressController::class)->name('progress');

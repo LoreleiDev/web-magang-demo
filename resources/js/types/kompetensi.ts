@@ -42,6 +42,12 @@ export type RingkasanSiswa = {
     unit_kerja: string | null;
     status_aktif: boolean;
     progres: RingkasanProgres;
+    kompetensi_utama: string | null;
+    paling_dikuasai: {
+        nama: string;
+        level: number;
+        terverifikasi: boolean;
+    } | null;
     jumlah_logbook: number;
     logbook_terakhir: string | null;
     rata_skor: number | null;

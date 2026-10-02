@@ -4,7 +4,9 @@ import {
     ChevronRight,
     ClipboardCheck,
     NotebookPen,
+    Star,
     TriangleAlert,
+    Trophy,
 } from 'lucide-react';
 import { formatTanggal, formatTanggalWaktu } from '@/lib/format';
 import { cn } from '@/lib/utils';
@@ -44,6 +46,42 @@ export function KartuSiswa({
                 </div>
                 <ChevronRight className="mt-1 size-5 shrink-0 text-navy-300 transition-transform group-hover:translate-x-0.5" />
             </div>
+
+            <dl className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                <div className="min-w-0 rounded-2xl border border-dashed px-3 py-2">
+                    <dt className="flex items-center gap-1 font-semibold text-navy-500">
+                        <Star className="size-3.5 fill-hijau-500 text-hijau-500" />
+                        Kompetensi utama
+                    </dt>
+                    <dd className="mt-0.5 line-clamp-2 font-semibold text-navy-900">
+                        {siswa.kompetensi_utama ?? 'Belum dipilih'}
+                    </dd>
+                </div>
+                <div className="min-w-0 rounded-2xl bg-navy-50/70 px-3 py-2">
+                    <dt className="flex items-center gap-1 font-semibold text-navy-500">
+                        <Trophy className="size-3.5 text-navy-500" />
+                        Paling dikuasai
+                    </dt>
+                    <dd className="mt-0.5 font-semibold text-navy-900">
+                        {siswa.paling_dikuasai ? (
+                            <>
+                                <span className="line-clamp-2">
+                                    {siswa.paling_dikuasai.nama}
+                                </span>
+                                <span className="font-normal text-navy-600">
+                                    Level {siswa.paling_dikuasai.level}
+                                    {siswa.paling_dikuasai.terverifikasi &&
+                                        ' · terverifikasi'}
+                                </span>
+                            </>
+                        ) : (
+                            <span className="font-normal text-muted-foreground">
+                                Belum ada yang naik level
+                            </span>
+                        )}
+                    </dd>
+                </div>
+            </dl>
 
             <div className="mt-4">
                 <div className="flex items-baseline justify-between text-sm">

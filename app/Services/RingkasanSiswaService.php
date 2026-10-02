@@ -25,7 +25,7 @@ class RingkasanSiswaService
      */
     public function baris(User $siswa): array
     {
-        $siswa->loadMissing('profilSiswa');
+        $siswa->loadMissing('profilSiswa.kompetensiFokus');
 
         $logbookTerakhir = $siswa->logbook()->latest('tanggal')->first();
         $hasilTerakhir = $siswa->hasilAssessment()->with('kuis.materi:id,judul')->latest('tanggal')->first();
@@ -38,6 +38,8 @@ class RingkasanSiswaService
             'unit_kerja' => $siswa->profilSiswa?->unit_kerja,
             'status_aktif' => $siswa->status_aktif,
             'progres' => $this->progres->ringkasan($siswa),
+            'kompetensi_utama' => $siswa->profilSiswa?->kompetensiFokus?->nama_kompetensi_sekolah,
+            'paling_dikuasai' => $this->progres->palingDikuasai($siswa),
             'jumlah_logbook' => $siswa->logbook()->count(),
             'logbook_terakhir' => $logbookTerakhir?->tanggal->toDateString(),
             'rata_skor' => $this->rataSkorTerbaik($siswa),

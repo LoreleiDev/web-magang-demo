@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property int $id
  * @property int $siswa_id
- * @property list<array{peran: string, isi: string}> $pesan
+ * @property list<array{peran: string, isi: string, sumber?: list<string>}> $pesan peran: siswa | mentor
  */
 #[Table('chat_ai_mentor')]
 #[Fillable(['siswa_id', 'pesan'])]

@@ -8,6 +8,7 @@ use App\Models\Materi;
 use App\Models\Perusahaan;
 use App\Models\User;
 use App\Models\VerifikasiMateri;
+use App\Services\VerifikasiMateriService;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Queue;
 use Inertia\Testing\AssertableInertia as Assert;
@@ -103,7 +104,7 @@ test('edit materi oleh guru membuat hasil pemeriksaan lama tidak dihitung lagi',
     $this->travel(1)->minutes();
     $this->materi->update(['diubah_terakhir' => now(), 'terverifikasi_industri' => false]);
 
-    expect(app(App\Services\VerifikasiMateriService::class)->badgeTampil($this->materi->fresh()))->toBeFalse();
+    expect(app(VerifikasiMateriService::class)->badgeTampil($this->materi->fresh()))->toBeFalse();
 
     $this->actingAs($this->industriA)
         ->get(route('industri.materi.index'))
@@ -165,8 +166,7 @@ test('siswa melihat badge pada materi yang diverifikasi', function () {
 
     $siswa = User::factory()->siswa(KelompokMagang::factory()->create(), 'TKJ', 'NOC')->create();
 
-    $this->actingAs($siswa)
-        ->withSession(['pendampingan.kompetensi_id' => $this->materi->kompetensi_id])
+    $this->actingAs(siswaSiap($siswa, $this->materi->kompetensi_id))
         ->get(route('siswa.belajar.index'))
         ->assertInertia(fn (Assert $page) => $page->where('kompetensi.0.materi.0.terverifikasi_industri', true));
 });

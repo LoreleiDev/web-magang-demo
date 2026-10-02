@@ -100,6 +100,12 @@ class DatabaseSeeder extends Seeder
             ['Pengujian perangkat lunak', 'Menulis test case dan melaporkan bug di issue tracker', 4],
         ]);
 
+        // Siswa yang sudah memilih unit kerja juga sudah memilih kompetensi utama;
+        // Citra & Fajar belum, untuk mencoba halaman Mulai Pendampingan.
+        foreach ([[$andi, $kompetensiTkj[1]], [$bayu, $kompetensiTkj[0]], [$dewi, $kompetensiRpl[2]], [$eko, $kompetensiRpl[1]]] as [$s, $k]) {
+            $s->profilSiswa->update(['kompetensi_fokus_id' => $k->id]);
+        }
+
         // [level_siswa, status] per kompetensi (urutan sama dengan daftar di atas). Level > 1
         // berarti siswa sudah lulus kuis materi berlevel tsb sebelumnya (bagian 11.1).
         $this->progres($andi, $kompetensiTkj, $guruTkj, $industriNusantara, [

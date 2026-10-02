@@ -1,5 +1,8 @@
 import { Head } from '@inertiajs/react';
-import { Factory, School, Target } from 'lucide-react';
+import { router } from '@inertiajs/react';
+import { Factory, School, Star, Target } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import siswa from '@/routes/siswa';
 import { EmptyState } from '@/components/empty-state';
 import {
     GapBadge,
@@ -22,8 +25,10 @@ const legenda = [
  */
 export default function PetaKompetensi({
     kompetensi,
+    kompetensiUtamaId,
 }: {
     kompetensi: BarisKompetensi[];
+    kompetensiUtamaId: number | null;
 }) {
     return (
         <>
@@ -96,6 +101,15 @@ export default function PetaKompetensi({
                                         target {k.target_level}
                                     </p>
                                 </div>
+                                <div className="mt-3">
+                                    <TombolUtama
+                                        kompetensiId={k.kompetensi_id}
+                                        utama={
+                                            k.kompetensi_id ===
+                                            kompetensiUtamaId
+                                        }
+                                    />
+                                </div>
                             </li>
                         ))}
                     </ul>
@@ -124,6 +138,17 @@ export default function PetaKompetensi({
                                     >
                                         <td className="px-5 py-4 font-bold text-navy-900">
                                             {k.nama_kompetensi_sekolah}
+                                            <div className="mt-2 font-normal">
+                                                <TombolUtama
+                                                    kompetensiId={
+                                                        k.kompetensi_id
+                                                    }
+                                                    utama={
+                                                        k.kompetensi_id ===
+                                                        kompetensiUtamaId
+                                                    }
+                                                />
+                                            </div>
                                         </td>
                                         <td className="px-5 py-4 text-navy-700">
                                             {k.aktivitas_kompetensi_industri}
@@ -159,5 +184,42 @@ export default function PetaKompetensi({
                 </>
             )}
         </>
+    );
+}
+
+/**
+ * Kompetensi utama siswa bisa diganti kapan saja (keputusan 13 no. 30).
+ */
+function TombolUtama({
+    kompetensiId,
+    utama,
+}: {
+    kompetensiId: number;
+    utama: boolean;
+}) {
+    if (utama) {
+        return (
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-hijau-50 px-2.5 py-1 text-xs font-bold text-hijau-700">
+                <Star className="size-3.5 fill-hijau-500 text-hijau-500" />
+                Kompetensi utama
+            </span>
+        );
+    }
+
+    return (
+        <Button
+            variant="outline"
+            size="sm"
+            onClick={() =>
+                router.put(
+                    siswa.kompetensiUtama().url,
+                    { kompetensi_id: kompetensiId },
+                    { preserveScroll: true },
+                )
+            }
+        >
+            <Star />
+            Jadikan kompetensi utama
+        </Button>
     );
 }
