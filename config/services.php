@@ -42,7 +42,11 @@ return [
         // Dipakai jika model utama sibuk (HTTP 503/429).
         'model_cadangan' => env('GEMINI_MODEL_CADANGAN', 'gemini-3.5-flash-lite'),
         'base_url' => 'https://generativelanguage.googleapis.com',
-        'timeout' => (int) env('GEMINI_TIMEOUT', 60),
+        // Waktu tunggu per model (detik); jika habis, model cadangan dicoba.
+        'timeout' => (int) env('GEMINI_TIMEOUT', 25),
+        // Batas total satu permintaan chat/analisis (semua model), agar siswa
+        // tidak menunggu terlalu lama dan PHP tidak menghentikan request.
+        'batas_waktu' => (int) env('GEMINI_BATAS_WAKTU', 55),
     ],
 
 ];

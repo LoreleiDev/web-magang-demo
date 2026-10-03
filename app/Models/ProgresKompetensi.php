@@ -20,6 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property CarbonImmutable|null $tanggal_level_diisi
  * @property StatusKompetensi $status
  * @property int|null $diverifikasi_oleh
+ * @property string|null $nama_verifikator
  * @property CarbonImmutable|null $tanggal_verifikasi
  * @property-read User $siswa
  * @property-read Kompetensi $kompetensi
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Table('progres_kompetensi')]
 #[Fillable([
     'siswa_id', 'kompetensi_id', 'level_siswa', 'level_diisi_oleh', 'tanggal_level_diisi',
-    'status', 'diverifikasi_oleh', 'tanggal_verifikasi',
+    'status', 'diverifikasi_oleh', 'nama_verifikator', 'tanggal_verifikasi',
 ])]
 class ProgresKompetensi extends Model
 {

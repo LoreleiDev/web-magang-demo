@@ -39,7 +39,7 @@ class DokumenSekolahController extends Controller
                 ->map(fn (DokumenKnowledgeBase $d) => [
                     'id' => $d->id,
                     'nama_file' => $d->nama_file,
-                    'diunggah_oleh' => $d->pengunggah->name,
+                    'diunggah_oleh' => $d->pengunggah->name ?? 'Akun dihapus',
                     'diunggah_pada' => $d->created_at?->toIso8601String(),
                     'status_ai' => $d->status_ai,
                     'pesan_error_ai' => $d->pesan_error_ai,

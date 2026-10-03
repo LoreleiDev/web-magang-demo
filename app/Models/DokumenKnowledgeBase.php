@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property int|null $perusahaan_id
  * @property string $nama_file
  * @property string $path_file
- * @property int $diunggah_oleh
+ * @property int|null $diunggah_oleh
  * @property string|null $id_di_layanan_ai Nama dokumen di Gemini File Search.
  * @property string $status_ai menunggu | siap | gagal
  * @property string|null $pesan_error_ai

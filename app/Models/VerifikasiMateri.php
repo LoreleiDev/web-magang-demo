@@ -13,14 +13,15 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  *
  * @property int $id
  * @property int $materi_id
- * @property int $diperiksa_oleh
+ * @property int|null $diperiksa_oleh
+ * @property string|null $nama_pemeriksa
  * @property int $perusahaan_id
  * @property HasilVerifikasiMateri $hasil
  * @property string|null $masukan
  * @property bool $email_terkirim
  */
 #[Table('verifikasi_materi')]
-#[Fillable(['materi_id', 'diperiksa_oleh', 'perusahaan_id', 'hasil', 'masukan', 'email_terkirim'])]
+#[Fillable(['materi_id', 'diperiksa_oleh', 'nama_pemeriksa', 'perusahaan_id', 'hasil', 'masukan', 'email_terkirim'])]
 class VerifikasiMateri extends Model
 {
     /**

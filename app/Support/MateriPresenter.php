@@ -28,7 +28,7 @@ final class MateriPresenter
             'kompetensi' => $materi->kompetensi->nama_kompetensi_sekolah,
             'program_keahlian' => $materi->kompetensi->program_keahlian,
             'program_keahlian_nama' => $materi->kompetensi->program->nama ?? $materi->kompetensi->program_keahlian,
-            'pembuat' => $materi->pembuat->name,
+            'pembuat' => $materi->pembuat->name ?? 'Guru (akun dihapus)',
             'diubah_terakhir' => $materi->diubah_terakhir?->toIso8601String(),
         ];
     }
@@ -79,7 +79,7 @@ final class MateriPresenter
                 'hasil' => $v->hasil->value,
                 'hasil_label' => $v->hasil->label(),
                 'masukan' => $v->masukan,
-                'pemeriksa' => $v->pemeriksa->name,
+                'pemeriksa' => $v->nama_pemeriksa ?? $v->pemeriksa?->name,
                 'perusahaan' => $v->perusahaan->nama,
                 'tanggal' => $v->created_at?->toIso8601String(),
             ])

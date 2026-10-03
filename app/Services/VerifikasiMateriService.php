@@ -23,6 +23,7 @@ class VerifikasiMateriService
         $verifikasi = DB::transaction(function () use ($materi, $industri, $hasil, $masukan) {
             $verifikasi = $materi->verifikasi()->create([
                 'diperiksa_oleh' => $industri->id,
+                'nama_pemeriksa' => $industri->name,
                 'perusahaan_id' => $industri->perusahaanId(),
                 'hasil' => $hasil,
                 'masukan' => filled($masukan) ? trim((string) $masukan) : null,

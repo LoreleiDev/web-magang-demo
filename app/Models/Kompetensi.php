@@ -18,8 +18,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $nama_kompetensi_sekolah
  * @property string $aktivitas_kompetensi_industri
  * @property int $target_level
- * @property int $dibuat_oleh
- * @property-read User $pembuat
+ * @property int|null $dibuat_oleh
+ * @property-read User|null $pembuat
  */
 #[Table('kompetensi')]
 #[Fillable(['program_keahlian', 'nama_kompetensi_sekolah', 'aktivitas_kompetensi_industri', 'target_level', 'dibuat_oleh'])]

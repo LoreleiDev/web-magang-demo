@@ -112,11 +112,12 @@ export default function Progress({
                 <p className="text-sm text-muted-foreground">
                     Level Anda dibanding target industri.
                 </p>
-                <ul className="mt-4 space-y-4">
+                {/* Kolom dibagi bersama (subgrid) agar bar level & badge rata di semua baris. */}
+                <ul className="mt-4 space-y-5 sm:grid sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:space-y-0 sm:gap-x-6 sm:gap-y-4">
                     {kompetensi.map((k) => (
                         <li
                             key={k.kompetensi_id}
-                            className="grid gap-2 sm:grid-cols-[1fr_12rem_auto] sm:items-center sm:gap-4"
+                            className="grid gap-2 sm:col-span-3 sm:grid-cols-subgrid sm:items-center"
                         >
                             <span className="text-sm font-semibold text-navy-900">
                                 {k.nama_kompetensi_sekolah}
@@ -131,7 +132,11 @@ export default function Progress({
                                     Level {k.level} / target {k.target_level}
                                 </p>
                             </div>
-                            <GapBadge warna={k.warna} gap={k.gap} />
+                            <GapBadge
+                                warna={k.warna}
+                                gap={k.gap}
+                                className="justify-self-start"
+                            />
                         </li>
                     ))}
                 </ul>

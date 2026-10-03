@@ -34,7 +34,7 @@ final class KompetensiPresenter
             'status' => $baris['status']->value,
             'status_label' => $baris['status']->label(),
             'level_diisi_pada' => $p?->tanggal_level_diisi?->toIso8601String(),
-            'diverifikasi_oleh' => $p?->verifikator?->name,
+            'diverifikasi_oleh' => $p->nama_verifikator ?? $p?->verifikator?->name,
             'diverifikasi_pada' => $p?->tanggal_verifikasi?->toIso8601String(),
         ];
     }

@@ -8,6 +8,7 @@ use App\Http\Requests\Superadmin\AkunRequest;
 use App\Models\Perusahaan;
 use App\Models\ProgramKeahlian;
 use App\Models\User;
+use App\Services\HapusDataService;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,6 +25,9 @@ class AkunController extends Controller
 {
     private const ROLE_DIKELOLA = [Role::Guru, Role::Siswa, Role::Industri];
 
+    /** Pilihan urutan daftar akun. */
+    private const URUTAN = ['nama', 'nama_desc', 'nomor', 'terbaru'];
+
     /** @var array<string, string>|null */
     private ?array $opsiProgram = null;
 
@@ -34,6 +38,11 @@ class AkunController extends Controller
         $role = Role::tryFrom((string) $request->query('role'));
         $role = in_array($role, self::ROLE_DIKELOLA, true) ? $role : null;
         $cari = trim((string) $request->query('cari'));
+        $opsiProgram = ProgramKeahlian::opsi();
+        $program = array_key_exists((string) $request->query('program'), $opsiProgram) && $role !== Role::Industri
+            ? (string) $request->query('program')
+            : null;
+        $urut = in_array($request->query('urut'), self::URUTAN, true) ? (string) $request->query('urut') : 'nama';
 
         $akun = User::query()
             ->whereIn('role', self::ROLE_DIKELOLA)
@@ -41,11 +50,15 @@ class AkunController extends Controller
             ->when($cari !== '', fn (Builder $q) => $q->where(fn (Builder $q) => $q
                 ->where('name', 'like', "%{$cari}%")
                 ->orWhere('email', 'like', "%{$cari}%")
-                ->orWhereHas('profilSiswa', fn (Builder $q) => $q->where('id_siswa', 'like', "%{$cari}%"))))
+                ->orWhereHas('profilSiswa', fn (Builder $q) => $q->where('id_siswa', 'like', "%{$cari}%"))
+                ->orWhereHas('profilGuru', fn (Builder $q) => $q->where('nip', 'like', "%{$cari}%"))))
+            // Program keahlian (jurusan) hanya dimiliki guru & siswa.
+            ->when($program, fn (Builder $q) => $q->where(fn (Builder $q) => $q
+                ->whereHas('profilSiswa', fn (Builder $q) => $q->where('program_keahlian', $program))
+                ->orWhereHas('profilGuru', fn (Builder $q) => $q->where('program_keahlian', $program))))
             ->with(['profilSiswa.kelompok', 'profilGuru', 'profilIndustri.perusahaan'])
             ->withCount('kelompokDibimbing')
-            ->orderBy('status_aktif', 'desc')
-            ->orderBy('name')
+            ->tap(fn (Builder $q) => $this->urutkan($q, $urut))
             ->paginate(15)
             ->withQueryString()
             ->through(fn (User $user) => $this->baris($user));
@@ -58,7 +71,8 @@ class AkunController extends Controller
 
         return Inertia::render('superadmin/akun/index', [
             'akun' => $akun,
-            'filter' => ['role' => $role?->value, 'cari' => $cari],
+            'filter' => ['role' => $role?->value, 'cari' => $cari, 'program' => $program, 'urut' => $urut],
+            'opsiProgram' => collect($opsiProgram)->map(fn (string $nama, string $kode) => ['kode' => $kode, 'nama' => $nama])->values(),
             'jumlah' => [
                 'semua' => (int) $jumlah->sum(),
                 'guru' => (int) ($jumlah[Role::Guru->value] ?? 0),
@@ -160,6 +174,20 @@ class AkunController extends Controller
     }
 
     /**
+     * Hapus akun permanen (revisi keputusan 25). Lihat HapusDataService untuk dampaknya.
+     */
+    public function destroy(User $akun, HapusDataService $hapus): RedirectResponse
+    {
+        Gate::authorize('delete', $akun);
+
+        $hapus->hapusAkun($akun);
+
+        Inertia::flash('toast', ['type' => 'success', 'message' => "Akun {$akun->name} dihapus."]);
+
+        return to_route('superadmin.akun.index');
+    }
+
+    /**
      * Aktifkan / nonaktifkan akun.
      */
     public function ubahStatus(User $akun): RedirectResponse
@@ -201,6 +229,31 @@ class AkunController extends Controller
     }
 
     /**
+     * Urutan daftar akun. "nomor" = siswa urut NIS, lalu guru urut NIP; tanpa nomor di akhir.
+     *
+     * @param  Builder<User>  $query
+     */
+    private function urutkan(Builder $query, string $urut): void
+    {
+        $nomor = '(select id_siswa from profil_siswa where profil_siswa.user_id = users.id)';
+        $nip = '(select nip from profil_guru where profil_guru.user_id = users.id)';
+
+        match ($urut) {
+            'nama_desc' => $query->orderBy('name', 'desc'),
+            // Siswa (NIS) dulu, lalu guru (NIP), lalu industri; angka dibandingkan
+            // sebagai bilangan (panjang dulu, baru nilainya).
+            'nomor' => $query
+                ->orderByRaw("case role when 'siswa' then 0 when 'guru' then 1 else 2 end")
+                ->orderByRaw("coalesce({$nomor}, {$nip}) is null")
+                ->orderByRaw("length(coalesce({$nomor}, {$nip}))")
+                ->orderByRaw("coalesce({$nomor}, {$nip})")
+                ->orderBy('name'),
+            'terbaru' => $query->orderByDesc('created_at')->orderByDesc('id'),
+            default => $query->orderBy('name'),
+        };
+    }
+
+    /**
      * @return array<string, mixed>
      */
     private function baris(User $user): array
@@ -209,6 +262,7 @@ class AkunController extends Controller
 
         $keterangan = match ($user->role) {
             Role::Guru => array_filter([
+                $user->profilGuru?->nip ? 'NIP '.$user->profilGuru->nip : null,
                 $user->profilGuru?->program_keahlian ? $program[$user->profilGuru->program_keahlian] ?? null : null,
                 $user->kelompok_dibimbing_count.' kelompok dibimbing',
             ]),

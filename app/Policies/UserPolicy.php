@@ -29,6 +29,14 @@ class UserPolicy
     }
 
     /**
+     * Hapus akun guru, siswa, industri (revisi keputusan 25). Akun superadmin tidak bisa dihapus.
+     */
+    public function delete(User $user, User $target): bool
+    {
+        return $user->hasRole(Role::Superadmin) && ! $target->hasRole(Role::Superadmin);
+    }
+
+    /**
      * Melihat data (progress, logbook, assessment) seorang siswa.
      */
     public function lihatSiswa(User $user, User $siswa): bool

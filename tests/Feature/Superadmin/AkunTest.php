@@ -37,6 +37,33 @@ test('daftar akun bisa difilter per role dan dicari', function () {
         ->assertInertia(fn (Assert $page) => $page->has('akun.data', 1)->where('akun.data.0.name', 'Andi Siswa'));
 });
 
+test('daftar akun difilter per program keahlian dan bisa diurutkan', function () {
+    $guruTkj = User::factory()->guru('TKJ')->create(['name' => 'Citra Guru']);
+    $guruTkj->profilGuru->update(['nip' => '199001']);
+    User::factory()->guru('RPL')->create(['name' => 'Eko Guru RPL']);
+    $andi = User::factory()->siswa(null, 'TKJ')->create(['name' => 'Andi']);
+    $bayu = User::factory()->siswa(null, 'TKJ')->create(['name' => 'Bayu']);
+    $andi->profilSiswa->update(['id_siswa' => '2002']);
+    $bayu->profilSiswa->update(['id_siswa' => '1001']);
+    User::factory()->industri()->create(['name' => 'Dodi Industri']);
+
+    $nama = fn (array $query) => $this->actingAs($this->admin)
+        ->get(route('superadmin.akun.index', $query))
+        ->viewData('page')['props']['akun']['data'];
+
+    // Jurusan TKJ: guru & siswa TKJ saja (industri tidak punya jurusan).
+    expect(array_column($nama(['program' => 'TKJ']), 'name'))->toBe(['Andi', 'Bayu', 'Citra Guru'])
+        ->and(array_column($nama(['program' => 'TKJ', 'role' => 'guru']), 'name'))->toBe(['Citra Guru'])
+        ->and(array_column($nama(['urut' => 'nama_desc']), 'name'))->toBe(['Eko Guru RPL', 'Dodi Industri', 'Citra Guru', 'Bayu', 'Andi'])
+        // Siswa urut NIS, lalu guru urut NIP.
+        ->and(array_column($nama(['urut' => 'nomor', 'program' => 'TKJ']), 'name'))->toBe(['Bayu', 'Andi', 'Citra Guru'])
+        // Nilai tidak dikenal kembali ke bawaan (nama A–Z), tidak error.
+        ->and(array_column($nama(['urut' => 'drop table', 'program' => 'XYZ']), 'name'))->toBe(['Andi', 'Bayu', 'Citra Guru', 'Dodi Industri', 'Eko Guru RPL']);
+
+    $this->actingAs($this->admin)->get(route('superadmin.akun.index', ['cari' => '199001']))
+        ->assertInertia(fn (Assert $page) => $page->has('akun.data', 1)->where('akun.data.0.name', 'Citra Guru'));
+});
+
 test('akun superadmin tidak tampil di daftar', function () {
     $this->actingAs($this->admin)
         ->get(route('superadmin.akun.index'))

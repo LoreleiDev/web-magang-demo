@@ -28,6 +28,11 @@ class KirimEmailMasukanMateri implements ShouldQueue
     {
         $this->verifikasi->loadMissing(['materi.pembuat', 'pemeriksa', 'perusahaan']);
 
+        // Akun guru pembuat sudah dihapus: masukan tetap tersimpan di sistem, email tidak dikirim.
+        if ($this->verifikasi->materi->pembuat === null) {
+            return;
+        }
+
         Mail::to($this->verifikasi->materi->pembuat)->send(new MasukanMateriMail($this->verifikasi));
 
         $this->verifikasi->update(['email_terkirim' => true]);

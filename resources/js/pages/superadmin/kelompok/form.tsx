@@ -31,7 +31,7 @@ type Props = {
         id: number;
         nama_kelompok: string;
         perusahaan_id: number;
-        guru_pembimbing_id: number;
+        guru_pembimbing_id: number | null;
         periode_mulai: string;
         periode_selesai: string;
         siswa_ids: number[];
@@ -57,7 +57,9 @@ export default function KelompokForm({
     const form = useForm({
         nama_kelompok: kelompok?.nama_kelompok ?? '',
         perusahaan_id: kelompok ? String(kelompok.perusahaan_id) : '',
-        guru_pembimbing_id: kelompok ? String(kelompok.guru_pembimbing_id) : '',
+        guru_pembimbing_id: kelompok?.guru_pembimbing_id
+            ? String(kelompok.guru_pembimbing_id)
+            : '',
         periode_mulai: kelompok?.periode_mulai ?? '',
         periode_selesai: kelompok?.periode_selesai ?? '',
         siswa_ids: kelompok?.siswa_ids ?? [],

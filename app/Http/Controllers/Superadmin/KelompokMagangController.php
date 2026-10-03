@@ -10,6 +10,7 @@ use App\Models\Perusahaan;
 use App\Models\ProfilSiswa;
 use App\Models\ProgramKeahlian;
 use App\Models\User;
+use App\Services\HapusDataService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
@@ -38,8 +39,8 @@ class KelompokMagangController extends Controller
                 'id' => $k->id,
                 'nama_kelompok' => $k->nama_kelompok,
                 'perusahaan' => $k->perusahaan->nama,
-                'guru' => $k->guruPembimbing->name,
-                'guru_aktif' => $k->guruPembimbing->status_aktif,
+                'guru' => $k->guruPembimbing?->name,
+                'guru_aktif' => $k->guruPembimbing?->status_aktif,
                 'periode_mulai' => $k->periode_mulai->toDateString(),
                 'periode_selesai' => $k->periode_selesai->toDateString(),
                 'status_periode' => match (true) {
@@ -120,6 +121,24 @@ class KelompokMagangController extends Controller
         });
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Perubahan kelompok disimpan.']);
+
+        return to_route('superadmin.kelompok.index');
+    }
+
+    /**
+     * Hapus kelompok (revisi keputusan 26); siswanya menjadi tanpa kelompok.
+     */
+    public function destroy(KelompokMagang $kelompok, HapusDataService $hapus): RedirectResponse
+    {
+        Gate::authorize('delete', $kelompok);
+
+        $jumlahSiswa = $hapus->hapusKelompok($kelompok);
+
+        Inertia::flash('toast', [
+            'type' => 'success',
+            'message' => "Kelompok {$kelompok->nama_kelompok} dihapus."
+                .($jumlahSiswa > 0 ? " {$jumlahSiswa} siswa kini belum masuk kelompok." : ''),
+        ]);
 
         return to_route('superadmin.kelompok.index');
     }

@@ -49,7 +49,7 @@ class MateriController extends Controller
                         'hasil' => $terakhir->hasil->value,
                         'hasil_label' => $terakhir->hasil->label(),
                         'masukan' => $terakhir->masukan,
-                        'pemeriksa' => $terakhir->pemeriksa->name,
+                        'pemeriksa' => $terakhir->nama_pemeriksa ?? $terakhir->pemeriksa?->name,
                         'perusahaan' => $terakhir->perusahaan->nama,
                         'tanggal' => $terakhir->created_at?->toIso8601String(),
                     ] : null,

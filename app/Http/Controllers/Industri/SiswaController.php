@@ -42,6 +42,7 @@ class SiswaController extends Controller
         $progres->update([
             'status' => StatusKompetensi::Terverifikasi,
             'diverifikasi_oleh' => $request->user()->id,
+            'nama_verifikator' => $request->user()->name,
             'tanggal_verifikasi' => now(),
         ]);
 

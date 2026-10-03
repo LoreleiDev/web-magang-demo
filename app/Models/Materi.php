@@ -18,13 +18,13 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
  * @property int $id
  * @property int $kompetensi_id
  * @property string $judul
- * @property int $dibuat_oleh
+ * @property int|null $dibuat_oleh
  * @property CarbonImmutable|null $diubah_terakhir
  * @property int $level Level 1-4 yang dicapai siswa jika lulus kuis materi ini.
  * @property int $nilai_minimal Nilai minimal lulus kuis (bawaan 75).
  * @property bool $terverifikasi_industri
  * @property-read Kompetensi $kompetensi
- * @property-read User $pembuat
+ * @property-read User|null $pembuat
  */
 #[Table('materi')]
 #[Fillable(['kompetensi_id', 'judul', 'level', 'nilai_minimal', 'dibuat_oleh', 'diubah_terakhir', 'terverifikasi_industri'])]

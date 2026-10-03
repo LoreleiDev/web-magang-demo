@@ -344,10 +344,26 @@ class AiMentorService
     private function generate(array $body): array
     {
         $model = array_unique(array_filter([config('services.gemini.model'), config('services.gemini.model_cadangan')]));
+        $batasWaktu = (int) config('services.gemini.batas_waktu');
+        $tenggat = microtime(true) + $batasWaktu;
+
+        // Request web dibatasi max_execution_time PHP (XAMPP: 30 detik). Beri ruang
+        // di atas batas total agar yang muncul pesan ramah, bukan fatal error.
+        if (! app()->runningInConsole()) {
+            set_time_limit($batasWaktu + 15);
+        }
 
         foreach ($model as $m) {
+            $sisa = (int) floor($tenggat - microtime(true));
+
+            if ($sisa < 5) {
+                break;
+            }
+
             try {
-                $respons = $this->http()->post("/v1beta/models/{$m}:generateContent", $body);
+                $respons = $this->http()
+                    ->timeout(min((int) config('services.gemini.timeout'), $sisa))
+                    ->post("/v1beta/models/{$m}:generateContent", $body);
             } catch (ConnectionException $e) {
                 Log::warning('Gemini tidak bisa dihubungi.', ['model' => $m, 'error' => $e->getMessage()]);
 
@@ -454,7 +470,8 @@ class AiMentorService
 
         return Http::baseUrl((string) config('services.gemini.base_url'))
             ->withHeaders(['x-goog-api-key' => $key])
-            ->timeout((int) config('services.gemini.timeout'))
+            // Untuk operasi knowledge base (queue); chat memakai batas sendiri di generate().
+            ->timeout(60)
             ->acceptJson();
     }
 }

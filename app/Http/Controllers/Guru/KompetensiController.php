@@ -34,7 +34,7 @@ class KompetensiController extends Controller
                     'nama_kompetensi_sekolah' => $k->nama_kompetensi_sekolah,
                     'aktivitas_kompetensi_industri' => $k->aktivitas_kompetensi_industri,
                     'target_level' => $k->target_level,
-                    'pembuat' => $k->pembuat->name,
+                    'pembuat' => $k->pembuat->name ?? 'Guru (akun dihapus)',
                     'jumlah_materi' => $k->materi_count,
                 ]),
         ]);

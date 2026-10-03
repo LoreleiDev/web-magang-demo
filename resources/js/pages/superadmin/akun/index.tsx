@@ -1,9 +1,12 @@
 import { Head, Link, router } from '@inertiajs/react';
 import {
+    ArrowDownUp,
+    GraduationCap,
     Pencil,
     Power,
     PowerOff,
     Search,
+    Trash2,
     TriangleAlert,
     UserPlus,
     Users,
@@ -14,11 +17,27 @@ import { PageHeader } from '@/components/page-header';
 import { Pagination } from '@/components/pagination';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { UserAvatar } from '@/components/user-menu';
 import { useFilter } from '@/hooks/use-filter';
 import { cn } from '@/lib/utils';
 import akunRoutes from '@/routes/superadmin/akun';
 import type { Paginated, Role } from '@/types';
+
+/** Dampak hapus akun per role (revisi keputusan 25). */
+const dampakHapus: Record<Role, string> = {
+    siswa: 'Semua data siswa ini ikut terhapus permanen: logbook beserta bukti kegiatan, hasil kuis, progres kompetensi, dan chat AI Mentor. Tindakan ini tidak bisa dibatalkan.',
+    guru: 'Akun guru dihapus permanen. Kompetensi, materi, dan dokumen sekolah buatannya tetap ada. Kelompok yang ia bimbing menjadi tanpa guru pembimbing sampai Anda menetapkan guru baru.',
+    industri:
+        'Akun industri dihapus permanen. Status kompetensi yang sudah diverifikasi dan riwayat verifikasi materi tetap tersimpan beserta nama pemeriksanya.',
+    superadmin: 'Akun superadmin tidak bisa dihapus.',
+};
 
 type BarisAkun = {
     id: number;
@@ -33,9 +52,26 @@ type BarisAkun = {
 
 type Props = {
     akun: Paginated<BarisAkun>;
-    filter: { role: Role | null; cari: string };
+    filter: {
+        role: Role | null;
+        cari: string;
+        program: string | null;
+        urut: Urutan;
+    };
+    opsiProgram: { kode: string; nama: string }[];
     jumlah: { semua: number; guru: number; siswa: number; industri: number };
 };
+
+type Urutan = 'nama' | 'nama_desc' | 'nomor' | 'terbaru';
+
+const urutan: { nilai: Urutan; label: string }[] = [
+    { nilai: 'nama', label: 'Nama A–Z' },
+    { nilai: 'nama_desc', label: 'Nama Z–A' },
+    { nilai: 'nomor', label: 'NIS / NIP' },
+    { nilai: 'terbaru', label: 'Terbaru dibuat' },
+];
+
+const SEMUA = 'semua';
 
 const tab = [
     { role: null, label: 'Semua', kunci: 'semua' },
@@ -44,10 +80,17 @@ const tab = [
     { role: 'industri', label: 'Industri', kunci: 'industri' },
 ] as const;
 
-export default function AkunIndex({ akun, filter, jumlah }: Props) {
+export default function AkunIndex({
+    akun,
+    filter,
+    opsiProgram,
+    jumlah,
+}: Props) {
     const [nilai, ubah] = useFilter(akunRoutes.index().url, {
         role: filter.role,
         cari: filter.cari,
+        program: filter.program,
+        urut: (filter.urut === 'nama' ? null : filter.urut) as Urutan | null,
     });
 
     return (
@@ -56,7 +99,7 @@ export default function AkunIndex({ akun, filter, jumlah }: Props) {
             <PageHeader
                 eyebrow="Panel Superadmin"
                 title="Akun pengguna"
-                description="Buat akun login untuk guru, siswa, dan pembimbing industri. Akun tidak dihapus, cukup dinonaktifkan."
+                description="Buat akun login untuk guru, siswa, dan pembimbing industri. Nonaktifkan akun untuk menghentikan akses sementara, atau hapus jika tidak dipakai lagi."
                 actions={
                     <Button asChild>
                         <Link
@@ -116,11 +159,63 @@ export default function AkunIndex({ akun, filter, jumlah }: Props) {
                         type="search"
                         value={nilai.cari}
                         onChange={(e) => ubah('cari', e.target.value)}
-                        placeholder="Cari nama, email, atau NIS"
+                        placeholder="Cari nama, email, NIS, atau NIP"
                         className="pl-9"
                         aria-label="Cari akun"
                     />
                 </div>
+            </div>
+
+            <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-center">
+                {/* Akun industri tidak punya program keahlian. */}
+                {nilai.role !== 'industri' && (
+                    <Select
+                        value={nilai.program ?? SEMUA}
+                        onValueChange={(v) =>
+                            ubah('program', v === SEMUA ? null : v)
+                        }
+                    >
+                        <SelectTrigger
+                            className="w-full justify-start sm:w-72 [&>svg:last-child]:ml-auto"
+                            aria-label="Program keahlian"
+                        >
+                            <GraduationCap className="text-navy-400" />
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value={SEMUA}>
+                                Semua program keahlian
+                            </SelectItem>
+                            {opsiProgram.map((p) => (
+                                <SelectItem key={p.kode} value={p.kode}>
+                                    {p.nama}
+                                </SelectItem>
+                            ))}
+                        </SelectContent>
+                    </Select>
+                )}
+                <Select
+                    value={nilai.urut ?? 'nama'}
+                    onValueChange={(v) =>
+                        ubah('urut', v === 'nama' ? null : (v as Urutan))
+                    }
+                >
+                    <SelectTrigger
+                        className="w-full justify-start sm:w-56 [&>svg:last-child]:ml-auto"
+                        aria-label="Urutkan"
+                    >
+                        <ArrowDownUp className="text-navy-400" />
+                        <span className="text-muted-foreground">Urutkan:</span>
+                        <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {urutan.map((u) => (
+                            <SelectItem key={u.nilai} value={u.nilai}>
+                                {u.label}
+                            </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
             </div>
 
             {akun.data.length === 0 ? (
@@ -153,6 +248,11 @@ function BarisAkunItem({ akun }: { akun: BarisAkun }) {
             {},
             { preserveScroll: true },
         );
+
+    const hapus = () =>
+        router.delete(akunRoutes.destroy(akun.id).url, {
+            preserveScroll: true,
+        });
 
     return (
         <li
@@ -226,6 +326,23 @@ function BarisAkunItem({ akun }: { akun: BarisAkun }) {
                         Aktifkan
                     </Button>
                 )}
+                <ConfirmDialog
+                    trigger={
+                        <Button
+                            variant="ghost"
+                            size="icon-sm"
+                            className="text-gap-tinggi hover:bg-gap-tinggi-soft hover:text-gap-tinggi"
+                            aria-label={`Hapus akun ${akun.name}`}
+                        >
+                            <Trash2 />
+                        </Button>
+                    }
+                    title={`Hapus akun ${akun.name}?`}
+                    description={dampakHapus[akun.role]}
+                    confirmLabel="Hapus permanen"
+                    destructive
+                    onConfirm={hapus}
+                />
             </div>
         </li>
     );

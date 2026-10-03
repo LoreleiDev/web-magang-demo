@@ -32,7 +32,7 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/', Superadmin\DashboardController::class)->name('dashboard');
 
-    Route::resource('akun', Superadmin\AkunController::class)->except(['show', 'destroy']);
+    Route::resource('akun', Superadmin\AkunController::class)->except(['show']);
     Route::patch('akun/{akun}/status', [Superadmin\AkunController::class, 'ubahStatus'])->name('akun.status');
 
     Route::resource('perusahaan', Superadmin\PerusahaanController::class)->except('show');
@@ -40,7 +40,7 @@ Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('supe
     Route::get('perusahaan/{perusahaan}/dokumen/{dokumen}', [Superadmin\DokumenIndustriController::class, 'show'])->name('perusahaan.dokumen.show');
     Route::delete('perusahaan/{perusahaan}/dokumen/{dokumen}', [Superadmin\DokumenIndustriController::class, 'destroy'])->name('perusahaan.dokumen.destroy');
 
-    Route::resource('kelompok', Superadmin\KelompokMagangController::class)->except(['show', 'destroy']);
+    Route::resource('kelompok', Superadmin\KelompokMagangController::class)->except(['show']);
 
     Route::resource('program-keahlian', Superadmin\ProgramKeahlianController::class)
         ->only(['index', 'store', 'update', 'destroy'])

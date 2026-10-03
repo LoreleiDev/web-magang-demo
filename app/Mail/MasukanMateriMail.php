@@ -28,7 +28,7 @@ class MasukanMateriMail extends Mailable
             with: [
                 'judul' => $this->verifikasi->materi->judul,
                 'perusahaan' => $this->verifikasi->perusahaan->nama,
-                'pemeriksa' => $this->verifikasi->pemeriksa->name,
+                'pemeriksa' => $this->verifikasi->nama_pemeriksa ?? $this->verifikasi->pemeriksa?->name,
                 'hasil' => $this->verifikasi->hasil->label(),
                 'masukan' => $this->verifikasi->masukan,
                 'urlEdit' => route('guru.materi.edit', $this->verifikasi->materi_id),

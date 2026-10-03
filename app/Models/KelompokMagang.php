@@ -16,11 +16,11 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property int $id
  * @property string $nama_kelompok
  * @property int $perusahaan_id
- * @property int $guru_pembimbing_id
+ * @property int|null $guru_pembimbing_id
  * @property CarbonImmutable $periode_mulai
  * @property CarbonImmutable $periode_selesai
  * @property-read Perusahaan $perusahaan
- * @property-read User $guruPembimbing
+ * @property-read User|null $guruPembimbing
  */
 #[Table('kelompok_magang')]
 #[Fillable(['nama_kelompok', 'perusahaan_id', 'guru_pembimbing_id', 'periode_mulai', 'periode_selesai'])]

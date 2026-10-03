@@ -145,6 +145,36 @@ test('model cadangan dipakai saat model utama sibuk; jika semua gagal muncul pes
     expect(ChatAiMentor::count())->toBe(0);
 });
 
+test('model utama yang terlalu lama (timeout) dilewati, model cadangan menjawab', function () {
+    config([
+        'services.gemini.model' => 'lambat',
+        'services.gemini.model_cadangan' => 'cepat',
+        'services.gemini.timeout' => 25,
+        'services.gemini.batas_waktu' => 55,
+    ]);
+    Http::fake([
+        '*/models/lambat:generateContent' => Http::failedConnection('Operation timed out'),
+        '*/models/cepat:generateContent' => Http::response(balasanGemini('Dari model cepat')),
+    ]);
+
+    $this->actingAs($this->siswa)->postJson(route('siswa.mentor.kirim'), ['pesan' => 'Halo'])
+        ->assertOk()
+        ->assertJsonPath('balasan.isi', 'Dari model cepat');
+
+    // Setiap model dibatasi waktu tunggu per model, bukan menunggu tanpa batas.
+    Http::assertSent(fn (Request $r) => str_contains($r->url(), 'lambat'));
+});
+
+test('jika batas waktu total habis, siswa menerima pesan ramah (bukan fatal error)', function () {
+    config(['services.gemini.batas_waktu' => 4]);
+    Http::fake(['*:generateContent' => Http::response(balasanGemini('Tidak terpakai'))]);
+
+    $this->actingAs($this->siswa)->postJson(route('siswa.mentor.kirim'), ['pesan' => 'Halo'])
+        ->assertStatus(503)
+        ->assertJsonPath('message', 'AI Mentor sedang sibuk. Silakan coba lagi beberapa saat lagi.');
+    Http::assertNothingSent();
+});
+
 test('tanpa API key AI Mentor menampilkan pesan belum dikonfigurasi', function () {
     config(['services.gemini.key' => null]);
 

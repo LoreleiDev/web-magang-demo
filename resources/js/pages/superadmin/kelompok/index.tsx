@@ -1,13 +1,15 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, router } from '@inertiajs/react';
 import {
     Building2,
     CalendarRange,
     GraduationCap,
     Pencil,
     Plus,
+    Trash2,
     TriangleAlert,
     UsersRound,
 } from 'lucide-react';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
@@ -19,8 +21,8 @@ type Kelompok = {
     id: number;
     nama_kelompok: string;
     perusahaan: string;
-    guru: string;
-    guru_aktif: boolean;
+    guru: string | null;
+    guru_aktif: boolean | null;
     periode_mulai: string;
     periode_selesai: string;
     status_periode: 'akan_datang' | 'berjalan' | 'selesai';
@@ -90,19 +92,47 @@ export default function KelompokIndex({
                                 >
                                     {statusPeriode[k.status_periode].label}
                                 </span>
-                                <Button
-                                    asChild
-                                    variant="ghost"
-                                    size="icon-sm"
-                                    className="-mt-1 -mr-1"
-                                >
-                                    <Link
-                                        href={kelompokRoutes.edit(k.id).url}
-                                        aria-label={`Edit ${k.nama_kelompok}`}
+                                <div className="-mt-1 -mr-1 flex gap-1">
+                                    <Button
+                                        asChild
+                                        variant="ghost"
+                                        size="icon-sm"
                                     >
-                                        <Pencil />
-                                    </Link>
-                                </Button>
+                                        <Link
+                                            href={kelompokRoutes.edit(k.id).url}
+                                            aria-label={`Edit ${k.nama_kelompok}`}
+                                        >
+                                            <Pencil />
+                                        </Link>
+                                    </Button>
+                                    <ConfirmDialog
+                                        trigger={
+                                            <Button
+                                                variant="ghost"
+                                                size="icon-sm"
+                                                className="text-gap-tinggi hover:bg-gap-tinggi-soft hover:text-gap-tinggi"
+                                                aria-label={`Hapus ${k.nama_kelompok}`}
+                                            >
+                                                <Trash2 />
+                                            </Button>
+                                        }
+                                        title={`Hapus kelompok ${k.nama_kelompok}?`}
+                                        description={
+                                            k.jumlah_siswa > 0
+                                                ? `${k.jumlah_siswa} siswa di kelompok ini akan menjadi belum masuk kelompok dan harus memilih unit kerja lagi setelah dimasukkan ke kelompok baru. Logbook dan hasil kuis mereka tetap tersimpan.`
+                                                : 'Kelompok ini belum berisi siswa dan akan dihapus permanen.'
+                                        }
+                                        confirmLabel="Hapus kelompok"
+                                        destructive
+                                        onConfirm={() =>
+                                            router.delete(
+                                                kelompokRoutes.destroy(k.id)
+                                                    .url,
+                                                { preserveScroll: true },
+                                            )
+                                        }
+                                    />
+                                </div>
                             </div>
                             <h2 className="mt-3 text-base leading-snug font-bold text-navy-900">
                                 {k.nama_kelompok}
@@ -110,8 +140,12 @@ export default function KelompokIndex({
                             <dl className="mt-4 flex-1 space-y-2 text-sm">
                                 <Info icon={Building2}>{k.perusahaan}</Info>
                                 <Info icon={GraduationCap}>
-                                    {k.guru}
-                                    {!k.guru_aktif && (
+                                    {k.guru ?? (
+                                        <span className="rounded-full bg-gap-sedang-soft px-2 py-0.5 text-[11px] font-bold text-navy-900">
+                                            Belum ada guru pembimbing
+                                        </span>
+                                    )}
+                                    {k.guru !== null && !k.guru_aktif && (
                                         <span className="ml-1.5 rounded-full bg-gap-tinggi-soft px-2 py-0.5 text-[11px] font-bold text-gap-tinggi">
                                             Akun nonaktif
                                         </span>

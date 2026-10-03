@@ -51,7 +51,7 @@ Ada 4 role. Semua akun dibuat oleh Superadmin (tidak ada registrasi mandiri).
 
 | Fitur                                            | Superadmin | Guru                           | Industri                                   | Siswa                  |
 | ------------------------------------------------ | ---------- | ------------------------------ | ------------------------------------------ | ---------------------- |
-| Buat/edit/nonaktifkan akun guru, siswa, industri | ✅         | ❌                             | ❌                                         | ❌                     |
+| Buat/edit/nonaktifkan/hapus akun guru, siswa, industri | ✅         | ❌                             | ❌                                         | ❌                     |
 | Kelola data perusahaan                           | ✅         | ❌                             | ❌                                         | ❌                     |
 | Unggah dokumen industri (knowledge base)         | ✅         | ❌                             | ❌                                         | ❌                     |
 | Buat kelompok magang, tetapkan guru & siswa      | ✅         | ❌                             | ❌                                         | ❌                     |
@@ -196,7 +196,10 @@ bahwa siswa belum terdaftar di kelompok magang dan diminta menghubungi sekolah.
 
 - Buat akun **guru**, **siswa**, dan **industri** (nama, email, password awal, role).
 - Akun industri wajib dihubungkan ke satu **Perusahaan**.
-- Edit dan nonaktifkan akun.
+- Edit, nonaktifkan, dan hapus akun (keputusan 13 no. 25).
+- Daftar akun dapat difilter per role dan program keahlian (guru & siswa), dicari
+  (nama, email, NIS, NIP), dan diurutkan: nama A–Z (bawaan), Z–A, NIS/NIP
+  (siswa urut NIS, lalu guru urut NIP), atau terbaru dibuat.
 
 ### 5.4 Pemantauan (baca-saja)
 
@@ -217,6 +220,7 @@ bahwa siswa belum terdaftar di kelompok magang dan diminta menghubungi sekolah.
 - Tetapkan: perusahaan tujuan, periode magang, satu guru pembimbing, dan daftar siswa.
 - Satu guru dapat dimasukkan ke lebih dari satu kelompok.
 - Pindahkan siswa antar kelompok jika diperlukan.
+- Hapus kelompok; siswanya menjadi tanpa kelompok (keputusan 13 no. 26).
 
 ---
 
@@ -443,7 +447,10 @@ dari Gemini API (cek dokumentasi Gemini terbaru untuk cara pemakaiannya):
   Hapus dokumen di website juga menghapusnya dari Gemini (`HapusDokumenAi`).
 - Model diatur di `.env`: `GEMINI_MODEL` (bawaan `gemini-3.5-flash`) dan
   `GEMINI_MODEL_CADANGAN` (bawaan `gemini-3.5-flash-lite`), dipakai jika model
-  utama sibuk (429/500/503).
+  utama sibuk (429/500/503) atau melewati `GEMINI_TIMEOUT` (bawaan 25 detik).
+  Satu pertanyaan dibatasi total `GEMINI_BATAS_WAKTU` (bawaan 55 detik); batas
+  waktu PHP request diperpanjang di atasnya agar siswa selalu menerima pesan
+  ramah, bukan fatal error "Maximum execution time".
 - Teks system prompt 9.4 disimpan di `resources/prompts/ai-mentor.txt`, ditambah
   aturan format (tanpa LaTeX/tabel/heading) agar tampil rapi di chat.
 - Batas: 10 pesan AI per menit per siswa (chat + analisis logbook); riwayat chat
@@ -653,8 +660,8 @@ Teknis:
 | 29  | Nilai lulus kuis                               | Ditentukan guru per materi (nilai minimal, bawaan 75); menggantikan batas tetap 75 |
 | 23  | Autentikasi                                    | Starter kit React "blank" + login buatan sendiri (email + password, rate limit); tanpa registrasi, reset password, atau 2FA     |
 | 24  | Level awal siswa                               | Level 1 (Belum mampu) sampai lulus kuis materi yang lebih tinggi |
-| 25  | Akun                                           | Role tidak bisa diubah setelah dibuat; tidak ada hapus akun (cukup dinonaktifkan) |
-| 26  | Hapus data                                     | Kelompok tidak bisa dihapus; perusahaan yang masih dipakai kelompok/akun industri dan unit kerja yang masih dipilih siswa tidak bisa dihapus |
+| 25  | Akun                                           | Role tidak bisa diubah setelah dibuat. Superadmin dapat menonaktifkan **atau menghapus** akun guru, siswa, industri (revisi 3 Okt 2026; akun superadmin tidak bisa dihapus). Hapus siswa: logbook + bukti, hasil kuis, progres, dan chat ikut terhapus permanen. Hapus guru: kelompok, kompetensi, materi, dan dokumennya tetap ada; kelompok menjadi tanpa guru pembimbing sampai superadmin menetapkan guru baru; email masukan materi tidak dikirim (masukan tetap tersimpan). Hapus industri: riwayat verifikasi tetap ada, nama pemeriksa disimpan sebagai teks |
+| 26  | Hapus data                                     | Kelompok dapat dihapus superadmin (revisi 3 Okt 2026): siswanya menjadi tanpa kelompok dan unit kerjanya dikosongkan, data siswa tetap; perusahaan yang masih dipakai kelompok/akun industri dan unit kerja yang masih dipilih siswa tidak bisa dihapus |
 | 27  | Unit kerja siswa                               | Dikosongkan (siswa memilih ulang) jika siswa pindah ke kelompok di perusahaan lain, dikeluarkan dari kelompok, atau perusahaan kelompok diganti |
 | 28  | Dokumen knowledge base                         | PDF, DOCX, atau TXT, maks. 20 MB per file |
 | 30  | Kompetensi utama & paling dikuasai             | Kompetensi utama dipilih siswa, materinya tampil paling atas di Belajar, dapat diganti di Peta Kompetensi. "Paling dikuasai" dihitung otomatis (level tertinggi > sudah terverifikasi > naik level paling akhir); keduanya tampil di dashboard guru & industri |
