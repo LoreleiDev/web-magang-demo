@@ -29,13 +29,14 @@ export function LogbookKartu({
             <summary className="flex cursor-pointer list-none items-start gap-4 p-5 [&::-webkit-details-marker]:hidden">
                 <div className="min-w-0 flex-1">
                     {tampilkanSiswa && (
-                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
+                        <div className="flex flex-col gap-0.5 text-xs sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-2">
                             <span className="font-bold text-navy-900">
                                 {logbook.siswa}
                             </span>
                             {logbook.kelompok && (
                                 <span className="text-muted-foreground">
-                                    · {logbook.kelompok}
+                                    <span className="hidden sm:inline">· </span>
+                                    {logbook.kelompok}
                                 </span>
                             )}
                         </div>

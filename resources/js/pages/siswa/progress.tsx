@@ -72,7 +72,7 @@ export default function Progress({
             <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
                 <div className="col-span-2 rounded-3xl bg-navy-900 tekstur-titik p-5 text-white shadow-lg lg:col-span-1">
                     <p className="text-xs font-semibold text-navy-300">
-                        Overall progress
+                        Progres keseluruhan
                     </p>
                     <p className="mt-1 text-4xl font-extrabold tabular-nums">
                         {ringkasan.persen}%
@@ -107,7 +107,7 @@ export default function Progress({
             {/* Progres per kompetensi */}
             <section className="mt-6 rounded-3xl border bg-card p-5 shadow-xs sm:p-6">
                 <h2 className="text-base font-bold text-navy-900">
-                    Competency progress
+                    Progres kompetensi
                 </h2>
                 <p className="text-sm text-muted-foreground">
                     Level Anda dibanding target industri.
@@ -139,9 +139,9 @@ export default function Progress({
 
             <div className="mt-6 grid gap-6 lg:grid-cols-2">
                 {/* Skor kuis */}
-                <section className="rounded-3xl border bg-card p-5 shadow-xs sm:p-6">
+                <section className="min-w-0 rounded-3xl border bg-card p-5 shadow-xs sm:p-6">
                     <h2 className="text-base font-bold text-navy-900">
-                        Assessment score
+                        Skor assessment
                     </h2>
                     <p className="text-sm text-muted-foreground">
                         Skor terbaik per materi. Garis putus-putus = nilai
@@ -264,7 +264,7 @@ export default function Progress({
                 </section>
 
                 {/* Logbook per minggu */}
-                <section className="rounded-3xl border bg-card p-5 shadow-xs sm:p-6">
+                <section className="min-w-0 rounded-3xl border bg-card p-5 shadow-xs sm:p-6">
                     <h2 className="text-base font-bold text-navy-900">
                         Logbook per minggu
                     </h2>

@@ -85,7 +85,7 @@ export default function MulaiPendampingan({
                         </h1>
                         <p className="mt-2 max-w-xl text-navy-200">
                             Periksa data magang Anda, lalu pilih unit kerja dan
-                            kompetensi utama. Cukup sekali saja.
+                            kompetensi utama. Keduanya bisa diganti nanti.
                         </p>
                     </div>
                 </header>

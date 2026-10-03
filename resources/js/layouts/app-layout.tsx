@@ -68,8 +68,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 <main
                     className={cn(
                         'lg:pl-68',
+                        // Ruang untuk bottom nav + tombol AI Mentor agar konten
+                        // terakhir tidak tertutup.
                         pakaiBottomNav &&
-                            'pb-[calc(4rem+env(safe-area-inset-bottom))] lg:pb-0',
+                            'pb-[calc(8rem+env(safe-area-inset-bottom))] lg:pb-16',
                     )}
                 >
                     <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-10 lg:py-10">
