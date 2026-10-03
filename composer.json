@@ -53,6 +53,12 @@
             "Composer\\Config::disableProcessTimeout",
             "@php artisan dev"
         ],
+        "demo": [
+            "Composer\\Config::disableProcessTimeout",
+            "npm run build",
+            "@php -r \"file_exists('public/hot') && unlink('public/hot');\"",
+            "npx concurrently -c \"#93c5fd,#86efac\" --names server,queue --kill-others \"php artisan serve\" \"php artisan queue:listen --tries=1\""
+        ],
         "lint": [
             "pint --parallel"
         ],

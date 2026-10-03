@@ -21,6 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
             AddLinkHeadersForPreloadedAssets::class,
         ]);
 
+        // Percayai proxy lokal (mis. ngrok untuk demo) agar URL memakai https dari
+        // header X-Forwarded-*. Hanya 127.0.0.1/::1, jadi IP klien tidak bisa dipalsukan
+        // untuk mengakali rate limit login.
+        $middleware->trustProxies(at: ['127.0.0.1', '::1']);
+
         $middleware->alias([
             'role' => EnsureRole::class,
             'pendampingan' => EnsurePendampinganDimulai::class,
