@@ -22,21 +22,26 @@ import {
 import siswa from '@/routes/siswa';
 
 /**
- * Siswa mengganti unit/bagian kerja kapan saja (keputusan 13 no. 34).
+ * Ganti unit/bagian kerja: oleh siswa sendiri (keputusan 13 no. 34) atau oleh
+ * pembimbing industri untuk siswanya (`url` & `deskripsi` diisi, revisi 4 Okt 2026).
  */
 export function GantiUnitKerja({
     sekarang,
     daftar,
+    url = siswa.unitKerja().url,
+    deskripsi = 'Pilih bagian tempat Anda ditempatkan sekarang.',
 }: {
     sekarang: string | null;
     daftar: string[];
+    url?: string;
+    deskripsi?: string;
 }) {
     const [terbuka, setTerbuka] = useState(false);
     const form = useForm({ unit_kerja: sekarang ?? '' });
 
     const simpan = (e: FormEvent) => {
         e.preventDefault();
-        form.put(siswa.unitKerja().url, {
+        form.put(url, {
             preserveScroll: true,
             onSuccess: () => setTerbuka(false),
         });
@@ -56,9 +61,7 @@ export function GantiUnitKerja({
                 <form onSubmit={simpan} className="space-y-5">
                     <DialogHeader>
                         <DialogTitle>Ganti unit kerja</DialogTitle>
-                        <DialogDescription>
-                            Pilih bagian tempat Anda ditempatkan sekarang.
-                        </DialogDescription>
+                        <DialogDescription>{deskripsi}</DialogDescription>
                     </DialogHeader>
                     <div>
                         <Select

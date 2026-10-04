@@ -3,6 +3,7 @@ import { ArrowLeft, BadgeCheck, Hourglass } from 'lucide-react';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import type { DataDetailSiswa } from '@/components/detail-siswa';
 import { DetailSiswa } from '@/components/detail-siswa';
+import { GantiUnitKerja } from '@/components/ganti-unit-kerja';
 import { Button } from '@/components/ui/button';
 import industri from '@/routes/industri';
 import type { BarisKompetensi } from '@/types/kompetensi';
@@ -10,7 +11,9 @@ import type { BarisKompetensi } from '@/types/kompetensi';
 /**
  * Detail siswa untuk pembimbing industri + Verifikasi Kompetensi (bagian 8 & 11.1).
  */
-export default function IndustriSiswa(props: DataDetailSiswa) {
+export default function IndustriSiswa(
+    props: DataDetailSiswa & { daftarUnitKerja: string[] },
+) {
     return (
         <>
             <Head title={props.siswa.nama} />
@@ -23,6 +26,20 @@ export default function IndustriSiswa(props: DataDetailSiswa) {
 
             <DetailSiswa
                 data={props}
+                aksiUnitKerja={
+                    props.daftarUnitKerja.length > 0 && (
+                        <span className="ml-1.5">
+                            <GantiUnitKerja
+                                sekarang={props.siswa.unit_kerja}
+                                daftar={props.daftarUnitKerja}
+                                url={
+                                    industri.siswa.unitKerja(props.siswa.id).url
+                                }
+                                deskripsi={`Pilih bagian tempat ${props.siswa.nama} ditempatkan.`}
+                            />
+                        </span>
+                    )
+                }
                 aksiKompetensi={(baris) => (
                     <AksiVerifikasi
                         siswaId={props.siswa.id}

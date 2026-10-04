@@ -73,10 +73,16 @@ Route::middleware(['auth', 'role:industri'])->prefix('industri')->name('industri
     Route::get('siswa/{siswa}', [Industri\SiswaController::class, 'show'])->name('siswa.show');
     Route::post('siswa/{siswa}/kompetensi/{kompetensi}/verifikasi', [Industri\SiswaController::class, 'verifikasi'])
         ->name('siswa.verifikasi');
+    Route::put('siswa/{siswa}/unit-kerja', [Industri\SiswaController::class, 'unitKerja'])->name('siswa.unit-kerja');
 
     Route::get('materi', [Industri\MateriController::class, 'index'])->name('materi.index');
     Route::get('materi/{materi}', [Industri\MateriController::class, 'show'])->name('materi.show');
     Route::post('materi/{materi}/verifikasi', [Industri\MateriController::class, 'periksa'])->name('materi.verifikasi');
+
+    // Unit kerja perusahaan industri ini sendiri (perusahaan diambil dari akun, bukan URL).
+    Route::get('unit-kerja', [Industri\UnitKerjaController::class, 'index'])->name('unit-kerja.index');
+    Route::post('unit-kerja', [Industri\UnitKerjaController::class, 'store'])->name('unit-kerja.store');
+    Route::delete('unit-kerja', [Industri\UnitKerjaController::class, 'destroy'])->name('unit-kerja.destroy');
 });
 
 Route::middleware(['auth', 'role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {

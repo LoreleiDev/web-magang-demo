@@ -43,4 +43,16 @@ class UserPolicy
     {
         return $siswa->hasRole(Role::Siswa) && $siswa->dapatDilihatOleh($user);
     }
+
+    /**
+     * Pembimbing industri mengubah unit kerja siswa yang magang di perusahaannya
+     * (revisi 4 Okt 2026). Siswa tetap bisa mengganti sendiri (keputusan 34).
+     */
+    public function ubahUnitKerja(User $user, User $siswa): bool
+    {
+        return $user->hasRole(Role::Industri)
+            && $siswa->hasRole(Role::Siswa)
+            && $user->perusahaanId() !== null
+            && $siswa->perusahaanId() === $user->perusahaanId();
+    }
 }

@@ -53,6 +53,8 @@ Ada 4 role. Semua akun dibuat oleh Superadmin (tidak ada registrasi mandiri).
 | ------------------------------------------------ | ---------- | ------------------------------ | ------------------------------------------ | ---------------------- |
 | Buat/edit/nonaktifkan/hapus akun guru, siswa, industri | ✅         | ❌                             | ❌                                         | ❌                     |
 | Kelola data perusahaan                           | ✅         | ❌                             | ❌                                         | ❌                     |
+| Tambah & hapus unit kerja perusahaan             | ✅         | ❌                             | ✅ Perusahaannya sendiri                   | ❌                     |
+| Ubah unit kerja siswa                            | ❌         | ❌                             | ✅ Siswa di perusahaannya                  | ✅ Miliknya sendiri    |
 | Unggah dokumen industri (knowledge base)         | ✅         | ❌                             | ❌                                         | ❌                     |
 | Buat kelompok magang, tetapkan guru & siswa      | ✅         | ❌                             | ❌                                         | ❌                     |
 | Lihat daftar siswa                               | Semua      | Hanya kelompok yang ia bimbing | Hanya siswa di perusahaannya               | Diri sendiri           |
@@ -388,6 +390,9 @@ Gunakan grafik dan progress bar:
 - Untuk setiap siswa: progress, learning gap, aktivitas terakhir, logbook,
   hasil assessment.
 - Tombol **"Verifikasi Kompetensi"** per kompetensi siswa (lihat bagian 11.1).
+- **Ubah unit kerja siswa** di halaman detail siswa (keputusan 13 no. 34).
+- **Unit Kerja:** menambah dan menghapus unit kerja perusahaannya sendiri tanpa melalui
+  superadmin (keputusan 13 no. 36).
 - **Verifikasi Materi:** daftar materi untuk program keahlian siswa di
   perusahaannya. Industri dapat membaca materi lalu memverifikasi atau memberi
   masukan (lihat bagian 11.2).
@@ -668,8 +673,9 @@ Teknis:
 | 31  | Rekap kelompok guru                            | Guru melihat learning gap (siswa × kompetensi, berwarna) dan progres semua siswa di kelompok yang ia bimbing |
 | 32  | URL login                                      | `/login` siswa, `/login/guru`, `/login/industri`, `/login/admin`; tidak ada tautan ke halaman login lain |
 | 33  | Konfirmasi logout                              | SweetAlert2 (diminta pemilik proyek), diberi gaya sesuai tema |
-| 34  | Unit kerja siswa                               | Dipilih siswa sendiri dari daftar unit kerja perusahaan dan dapat diganti kapan saja |
+| 34  | Unit kerja siswa                               | Dipilih siswa sendiri dari daftar unit kerja perusahaan dan dapat diganti kapan saja; pembimbing industri juga dapat mengubah unit kerja siswa di perusahaannya dari halaman detail siswa (revisi 4 Okt 2026) |
 | 35  | Hari magang                                    | Dihitung dalam hari kalender dari `periode_mulai` sampai `periode_selesai` kelompok |
+| 36  | Unit kerja oleh industri                       | Pembimbing industri dapat **menambah dan menghapus** unit kerja perusahaannya sendiri (revisi 4 Okt 2026); aturan sama dengan superadmin: maks. 100 karakter, tidak kembar, maks. 30 unit, unit yang masih dipilih siswa tidak bisa dihapus, minimal tersisa satu unit. Ganti nama unit tetap lewat superadmin |
 
 ### 13.1 Keputusan Badge Verifikasi Materi (sudah dijawab)
 

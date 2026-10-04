@@ -45,9 +45,12 @@ export type DataDetailSiswa = {
 export function DetailSiswa({
     data,
     aksiKompetensi,
+    aksiUnitKerja,
 }: {
     data: DataDetailSiswa;
     aksiKompetensi?: (baris: BarisKompetensi) => ReactNode;
+    /** Tombol ganti unit kerja (khusus industri). */
+    aksiUnitKerja?: ReactNode;
 }) {
     const { siswa, kompetensi, logbook, assessment } = data;
 
@@ -70,6 +73,7 @@ export function DetailSiswa({
                     <span className="flex items-center gap-1.5">
                         <MapPin className="size-4 text-navy-400" />
                         {siswa.unit_kerja ?? 'Belum memilih unit kerja'}
+                        {aksiUnitKerja}
                     </span>
                     {siswa.periode_mulai && siswa.periode_selesai && (
                         <span className="flex items-center gap-1.5">

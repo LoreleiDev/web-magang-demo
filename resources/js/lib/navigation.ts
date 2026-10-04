@@ -121,6 +121,11 @@ export function navigasiUntuk(role: Role): NavItem[] {
                     href: industri.materi.index().url,
                     icon: BookOpen,
                 },
+                {
+                    title: 'Unit Kerja',
+                    href: industri.unitKerja.index().url,
+                    icon: Building2,
+                },
             ];
         // Urutan menentukan bottom nav: 4 menu pertama tampil, sisanya di "Lainnya".
         // AI Mentor ditambahkan sebagai chatbot mengambang di Tahap 6.
