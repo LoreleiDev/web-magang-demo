@@ -21,9 +21,10 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
 
 /**
- * Data contoh pengembangan. Semua akun memakai kata sandi "password".
+ * Data contoh untuk pengembangan & demo lokal. Semua akun memakai kata sandi "password".
+ * JANGAN dijalankan di production. Jalankan manual: php artisan db:seed --class=DemoSeeder
  */
-class DatabaseSeeder extends Seeder
+class DemoSeeder extends Seeder
 {
     use WithoutModelEvents;
 

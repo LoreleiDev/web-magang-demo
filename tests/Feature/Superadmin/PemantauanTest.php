@@ -2,11 +2,11 @@
 
 use App\Models\Materi;
 use App\Models\User;
-use Database\Seeders\DatabaseSeeder;
+use Database\Seeders\DemoSeeder;
 use Inertia\Testing\AssertableInertia as Assert;
 
 beforeEach(function () {
-    $this->seed(DatabaseSeeder::class);
+    $this->seed(DemoSeeder::class);
     $this->admin = User::where('email', 'admin@magangbridge.test')->firstOrFail();
 });
 
