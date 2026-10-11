@@ -110,12 +110,14 @@ class LogbookController extends Controller
             'kesulitan' => ['nullable', 'string', 'max:2000'],
             'pengetahuan_sekolah_digunakan' => ['nullable', 'string', 'max:2000'],
             'ingin_dipelajari' => ['nullable', 'string', 'max:2000'],
-            'bukti_kegiatan' => ['nullable', 'file', 'extensions:jpg,jpeg,png,webp,pdf', 'max:5120'],
+            // Cek ekstensi DAN isi file, agar file HTML yang menyamar sebagai gambar ditolak.
+            'bukti_kegiatan' => ['nullable', 'file', 'extensions:jpg,jpeg,png,webp,pdf', 'mimetypes:image/jpeg,image/png,image/webp,application/pdf', 'max:5120'],
             'hapus_bukti' => ['boolean'],
         ], [
             'tanggal.before_or_equal' => 'Tanggal logbook tidak boleh lebih dari hari ini.',
             'aktivitas.required' => 'Ceritakan aktivitas Anda hari ini.',
             'bukti_kegiatan.extensions' => 'Bukti kegiatan harus berupa gambar (JPG/PNG/WEBP) atau PDF.',
+            'bukti_kegiatan.mimetypes' => 'Isi file bukan gambar (JPG/PNG/WEBP) atau PDF yang valid.',
             'bukti_kegiatan.max' => 'Ukuran bukti kegiatan maksimal 5 MB.',
         ]);
     }

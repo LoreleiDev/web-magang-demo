@@ -33,7 +33,8 @@ return [
         'local' => [
             'driver' => 'local',
             'root' => storage_path('app/private'),
-            'serve' => true,
+            // Tidak dipakai; file privat hanya disajikan lewat controller yang memeriksa hak akses.
+            'serve' => false,
             'throw' => false,
             'report' => false,
         ],

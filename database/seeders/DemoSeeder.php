@@ -19,6 +19,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Carbon;
+use RuntimeException;
 
 /**
  * Data contoh untuk pengembangan & demo lokal. Semua akun memakai kata sandi "password".
@@ -35,6 +36,11 @@ class DemoSeeder extends Seeder
      */
     public function run(): void
     {
+        // Akun contoh berpassword "password" tidak boleh ada di website sungguhan.
+        if (app()->isProduction()) {
+            throw new RuntimeException('DemoSeeder tidak boleh dijalankan di production (akun contoh berpassword "password").');
+        }
+
         foreach ([
             'TKJ' => 'Teknik Komputer dan Jaringan',
             'RPL' => 'Rekayasa Perangkat Lunak',

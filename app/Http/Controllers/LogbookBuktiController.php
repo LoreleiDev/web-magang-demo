@@ -12,12 +12,30 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
  */
 class LogbookBuktiController extends Controller
 {
+    /** Jenis file yang boleh ditampilkan langsung di browser. */
+    private const TAMPIL_LANGSUNG = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
+
     public function __invoke(Logbook $logbook): StreamedResponse
     {
         Gate::authorize('view', $logbook);
 
-        abort_if($logbook->bukti_kegiatan === null || ! Storage::disk('local')->exists($logbook->bukti_kegiatan), 404);
+        $disk = Storage::disk('local');
+        abort_if($logbook->bukti_kegiatan === null || ! $disk->exists($logbook->bukti_kegiatan), 404);
 
-        return Storage::disk('local')->response($logbook->bukti_kegiatan);
+        $mime = (string) $disk->mimeType($logbook->bukti_kegiatan);
+        $aman = in_array($mime, self::TAMPIL_LANGSUNG, true);
+
+        // File lama/lain yang bukan gambar/PDF diunduh, tidak ditampilkan; header di bawah
+        // mencegah browser menjalankan isi file sebagai halaman (XSS tersimpan).
+        return $disk->response(
+            $logbook->bukti_kegiatan,
+            basename($logbook->bukti_kegiatan),
+            [
+                'Content-Type' => $aman ? $mime : 'application/octet-stream',
+                'X-Content-Type-Options' => 'nosniff',
+                'Content-Security-Policy' => "default-src 'none'; img-src 'self'; style-src 'unsafe-inline'; sandbox",
+            ],
+            $aman ? 'inline' : 'attachment',
+        );
     }
 }

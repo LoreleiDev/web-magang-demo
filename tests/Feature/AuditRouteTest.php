@@ -64,6 +64,7 @@ beforeEach(function () {
         'materi' => Materi::factory()->create(['kompetensi_id' => $kompetensi->id, 'dibuat_oleh' => $guru->id])->id,
         'logbook' => Logbook::create(['siswa_id' => $siswa->id, 'tanggal' => now()->toDateString(), 'aktivitas' => 'X'])->id,
         'programKeahlian' => ProgramKeahlian::where('kode', 'TKJ')->value('id'),
+        'role' => 'siswa',
         'dokumen' => DokumenKnowledgeBase::create([
             'jenis' => JenisDokumen::Industri,
             'perusahaan_id' => $kelompok->perusahaan_id,

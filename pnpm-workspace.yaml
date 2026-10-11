@@ -3,3 +3,7 @@ packages:
 
 publicHoistPattern:
     - '@inertiajs/core'
+
+# Tambalan keamanan untuk alat pengembangan (oxfmt mengunci tinypool 2.1.0 yang rentan).
+overrides:
+    tinypool: 2.2.0

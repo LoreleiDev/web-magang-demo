@@ -3,11 +3,14 @@
 use App\Http\Middleware\EnsurePendampinganDimulai;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Http\Middleware\TambahHeaderKeamanan;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Symfony\Component\HttpFoundation\Response;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,12 +22,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            TambahHeaderKeamanan::class,
         ]);
 
-        // Percayai proxy lokal (mis. ngrok untuk demo) agar URL memakai https dari
-        // header X-Forwarded-*. Hanya 127.0.0.1/::1, jadi IP klien tidak bisa dipalsukan
-        // untuk mengakali rate limit login.
-        $middleware->trustProxies(at: ['127.0.0.1', '::1']);
+        // Proxy yang dipercaya diatur dari config('magang.trusted_proxies') di
+        // AppServiceProvider (agar tetap terbaca setelah config:cache).
 
         $middleware->alias([
             'role' => EnsureRole::class,
@@ -49,4 +51,28 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*') || $request->expectsJson(),
         );
+
+        // Halaman error berbahasa Indonesia sesuai tampilan website. Saat lokal, error
+        // server tetap memakai halaman debug Laravel agar mudah dilacak.
+        $exceptions->respond(function (Response $response, Throwable $e, Request $request) {
+            $status = $response->getStatusCode();
+
+            if ($request->expectsJson()) {
+                return $response;
+            }
+
+            if ($status === 419) {
+                Inertia::flash('toast', ['type' => 'error', 'message' => 'Halaman sudah kedaluwarsa. Silakan coba lagi.']);
+
+                return back();
+            }
+
+            if (in_array($status, [403, 404, 429, 500, 503], true) && ! ($status >= 500 && config('app.debug'))) {
+                return Inertia::render('error', ['status' => $status])
+                    ->toResponse($request)
+                    ->setStatusCode($status);
+            }
+
+            return $response;
+        });
     })->create();

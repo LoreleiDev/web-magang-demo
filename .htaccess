@@ -1,0 +1,17 @@
+# Pengaman jika SELURUH proyek terlanjur diletakkan di public_html (Hostinger).
+# Cara yang disarankan tetap: document root/public_html menunjuk ke folder public/
+# (lihat DEPLOY.md). File ini tidak berpengaruh jika document root sudah benar.
+
+# Jangan pernah sajikan file tersembunyi (.env, .git, dll.).
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Teruskan semua permintaan ke folder public/, sehingga file proyek lain
+    # (.env, vendor/, storage/, config/, dll.) tidak bisa dibuka lewat browser.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

@@ -1,50 +1,24 @@
 import { cn } from '@/lib/utils';
 
 /**
- * Tanda MagangBridge: lengkung jembatan (sekolah ↔ industri) dengan titik hijau di puncaknya.
+ * Logo MagangBridge (buku terbuka, sekolah, jembatan, industri). Ditaruh di kotak
+ * putih agar logo navy tetap terlihat di latar gelap (sidebar, halaman login).
  */
-export function AppLogoMark({
-    className,
-    tone = 'gelap',
-}: {
-    className?: string;
-    tone?: 'gelap' | 'terang';
-}) {
+export function AppLogoMark({ className }: { className?: string }) {
     return (
-        <svg
-            viewBox="0 0 32 32"
-            aria-hidden="true"
-            className={cn('size-9 shrink-0', className)}
+        <span
+            className={cn(
+                'grid size-10 shrink-0 place-items-center rounded-xl bg-white p-1 shadow-sm ring-1 ring-navy-900/5',
+                className,
+            )}
         >
-            <rect
-                width="32"
-                height="32"
-                rx="9"
-                className={
-                    tone === 'terang' ? 'fill-navy-700' : 'fill-navy-900'
-                }
+            <img
+                src="/logo-magangbridge.png"
+                alt=""
+                aria-hidden="true"
+                className="size-full object-contain"
             />
-            <path
-                d="M6 21.5h20"
-                className="stroke-white"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-            />
-            <path
-                d="M8 21.5C9.5 15.5 12.5 12.5 16 12.5s6.5 3 8 9"
-                fill="none"
-                className="stroke-navy-200"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-            />
-            <path
-                d="M12 21.5v-4.6M20 21.5v-4.6"
-                className="stroke-navy-300"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-            />
-            <circle cx="16" cy="12.5" r="2.6" className="fill-hijau-500" />
-        </svg>
+        </span>
     );
 }
 
@@ -57,7 +31,7 @@ export function AppLogo({
 }) {
     return (
         <div className={cn('flex items-center gap-2.5', className)}>
-            <AppLogoMark tone={tone} />
+            <AppLogoMark />
             <div className="leading-none">
                 <div
                     className={cn(

@@ -26,6 +26,16 @@ return [
     ],
 
     /*
+     * Proxy yang dipercaya (header X-Forwarded-*). Bawaan hanya 127.0.0.1/::1 (mis. ngrok),
+     * agar IP klien tidak bisa dipalsukan untuk mengakali rate limit login. Isi
+     * TRUSTED_PROXIES (pisahkan dengan koma) jika di balik load balancer/CDN.
+     */
+    'trusted_proxies' => array_values(array_filter(array_map(
+        'trim',
+        explode(',', (string) env('TRUSTED_PROXIES', '127.0.0.1,::1')),
+    ))),
+
+    /*
      * Akun superadmin pertama yang dibuat DatabaseSeeder. Password WAJIB diisi
      * lewat .env (ADMIN_PASSWORD), jangan ditulis di kode/repository.
      */

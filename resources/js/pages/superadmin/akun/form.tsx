@@ -2,13 +2,17 @@ import { Head, Link, useForm, usePage } from '@inertiajs/react';
 import {
     ArrowLeft,
     Building2,
+    FileSpreadsheet,
+    PencilLine,
     GraduationCap,
     Info,
     LoaderCircle,
     UserRound,
 } from 'lucide-react';
 import type { FormEvent } from 'react';
+import { useState } from 'react';
 import { FormField, FormSection } from '@/components/form-field';
+import { ImporAkun } from '@/components/impor-akun';
 import { PageHeader } from '@/components/page-header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -71,6 +75,13 @@ const TANPA_PROGRAM = '__kosong';
 export default function AkunForm({ akun, roleAwal, perusahaan }: Props) {
     const { programKeahlian } = usePage().props;
     const edit = akun !== null;
+    // Tambah akun: isi manual satu per satu, atau impor banyak sekaligus dari file.
+    const [cara, setCara] = useState<'manual' | 'impor'>(() =>
+        typeof window !== 'undefined' &&
+        new URLSearchParams(window.location.search).get('cara') === 'impor'
+            ? 'impor'
+            : 'manual',
+    );
 
     const form = useForm({
         role: roleAwal,
@@ -184,239 +195,318 @@ export default function AkunForm({ akun, roleAwal, perusahaan }: Props) {
                     )}
                 </FormSection>
 
-                <FormSection title="Data login">
-                    <FormField
-                        label="Nama lengkap"
-                        htmlFor="name"
-                        error={errors.name}
-                        wajib
-                    >
-                        <Input
-                            id="name"
-                            value={data.name}
-                            onChange={(e) => setData('name', e.target.value)}
-                            aria-invalid={!!errors.name}
-                            autoComplete="off"
-                        />
-                    </FormField>
-                    <div className="grid gap-5 sm:grid-cols-2">
-                        <FormField
-                            label="Email"
-                            htmlFor="email"
-                            error={errors.email}
-                            wajib
-                        >
-                            <Input
-                                id="email"
-                                type="email"
-                                inputMode="email"
-                                value={data.email}
-                                onChange={(e) =>
-                                    setData('email', e.target.value)
-                                }
-                                aria-invalid={!!errors.email}
-                                autoComplete="off"
-                            />
-                        </FormField>
-                        <FormField
-                            label={edit ? 'Kata sandi baru' : 'Kata sandi awal'}
-                            htmlFor="password"
-                            error={errors.password}
-                            hint="Minimal 8 karakter."
-                            wajib={!edit}
-                        >
-                            <Input
-                                id="password"
-                                type="text"
-                                value={data.password}
-                                onChange={(e) =>
-                                    setData('password', e.target.value)
-                                }
-                                aria-invalid={!!errors.password}
-                                autoComplete="new-password"
-                                placeholder={
-                                    edit ? 'Biarkan kosong jika tetap' : ''
-                                }
-                            />
-                        </FormField>
-                    </div>
-                </FormSection>
-
-                {data.role === 'siswa' && (
+                {!edit && (
                     <FormSection
-                        title="Data siswa"
-                        description="Perusahaan dan periode magang diambil dari kelompok magang."
+                        title="Cara menambah"
+                        description="Isi satu per satu, atau tambahkan banyak akun sekaligus dari file Excel/CSV."
                     >
-                        <div className="grid gap-5 sm:grid-cols-2">
-                            <FormField
-                                label="ID siswa (NIS)"
-                                htmlFor="id_siswa"
-                                error={errors.id_siswa}
-                                wajib
-                            >
-                                <Input
-                                    id="id_siswa"
-                                    inputMode="numeric"
-                                    value={data.id_siswa}
-                                    onChange={(e) =>
-                                        setData('id_siswa', e.target.value)
-                                    }
-                                    aria-invalid={!!errors.id_siswa}
-                                />
-                            </FormField>
-                            <FormField
-                                label="Program keahlian"
-                                error={errors.program_keahlian}
-                                wajib
-                            >
-                                <PilihProgram
-                                    value={data.program_keahlian}
-                                    onChange={(v) =>
-                                        setData('program_keahlian', v)
-                                    }
-                                    pilihan={programKeahlian}
-                                    invalid={!!errors.program_keahlian}
-                                />
-                            </FormField>
-                        </div>
-                        {edit && (
-                            <div className="flex gap-3 rounded-2xl bg-navy-50 p-4 text-sm text-navy-800">
-                                <Info className="mt-0.5 size-4 shrink-0 text-navy-500" />
-                                <div>
-                                    <div>
-                                        Kelompok:{' '}
-                                        <strong>
-                                            {akun.kelompok ??
-                                                'Belum masuk kelompok'}
-                                        </strong>
-                                    </div>
-                                    <div>
-                                        Unit kerja:{' '}
-                                        <strong>
-                                            {akun.unit_kerja ??
-                                                'Belum dipilih siswa'}
-                                        </strong>
-                                    </div>
-                                    <div className="mt-1 text-xs text-muted-foreground">
-                                        Kelompok diatur di menu Kelompok Magang.
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </FormSection>
-                )}
-
-                {data.role === 'guru' && (
-                    <FormSection
-                        title="Data guru"
-                        description="Program keahlian menentukan kompetensi dan materi yang bisa dikelola guru."
-                    >
-                        <div className="grid gap-5 sm:grid-cols-2">
-                            <FormField
-                                label="NIP"
-                                htmlFor="nip"
-                                error={errors.nip}
-                                hint="Opsional."
-                            >
-                                <Input
-                                    id="nip"
-                                    inputMode="numeric"
-                                    value={data.nip}
-                                    onChange={(e) =>
-                                        setData('nip', e.target.value)
-                                    }
-                                    aria-invalid={!!errors.nip}
-                                />
-                            </FormField>
-                            <FormField
-                                label="Program keahlian"
-                                error={errors.program_keahlian}
-                                hint="Wajib diisi jika guru akan membuat kompetensi dan materi."
-                            >
-                                <PilihProgram
-                                    value={data.program_keahlian}
-                                    onChange={(v) =>
-                                        setData('program_keahlian', v)
-                                    }
-                                    pilihan={programKeahlian}
-                                    bolehKosong
-                                    invalid={!!errors.program_keahlian}
-                                />
-                            </FormField>
-                        </div>
-                    </FormSection>
-                )}
-
-                {data.role === 'industri' && (
-                    <FormSection
-                        title="Data pembimbing industri"
-                        description="Akun industri wajib terhubung ke satu perusahaan."
-                    >
-                        <div className="grid gap-5 sm:grid-cols-2">
-                            <FormField
-                                label="Perusahaan"
-                                error={errors.perusahaan_id}
-                                wajib
-                                hint={
-                                    perusahaan.length === 0
-                                        ? 'Belum ada perusahaan. Tambahkan dulu di menu Perusahaan.'
-                                        : undefined
-                                }
-                            >
-                                <Select
-                                    value={data.perusahaan_id}
-                                    onValueChange={(v) =>
-                                        setData('perusahaan_id', v)
-                                    }
+                        <div className="grid gap-2 sm:grid-cols-2">
+                            {(
+                                [
+                                    {
+                                        nilai: 'manual',
+                                        label: 'Isi manual',
+                                        ket: 'Satu akun lewat form',
+                                        icon: PencilLine,
+                                    },
+                                    {
+                                        nilai: 'impor',
+                                        label: 'Impor dari file',
+                                        ket: 'Banyak akun dari Excel/CSV',
+                                        icon: FileSpreadsheet,
+                                    },
+                                ] as const
+                            ).map((c) => (
+                                <button
+                                    key={c.nilai}
+                                    type="button"
+                                    onClick={() => setCara(c.nilai)}
+                                    aria-pressed={cara === c.nilai}
+                                    className={cn(
+                                        'flex items-center gap-3 rounded-2xl border p-3 text-left transition-colors',
+                                        cara === c.nilai
+                                            ? 'border-hijau-500 bg-hijau-50 ring-1 ring-hijau-500'
+                                            : 'bg-card hover:bg-navy-50',
+                                    )}
                                 >
-                                    <SelectTrigger
-                                        className="w-full"
-                                        aria-invalid={!!errors.perusahaan_id}
-                                    >
-                                        <SelectValue placeholder="Pilih perusahaan" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {perusahaan.map((p) => (
-                                            <SelectItem
-                                                key={p.id}
-                                                value={String(p.id)}
-                                            >
-                                                {p.nama}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </FormField>
-                            <FormField
-                                label="Jabatan"
-                                htmlFor="jabatan"
-                                error={errors.jabatan}
-                                hint="Opsional."
-                            >
-                                <Input
-                                    id="jabatan"
-                                    value={data.jabatan}
-                                    onChange={(e) =>
-                                        setData('jabatan', e.target.value)
-                                    }
-                                    aria-invalid={!!errors.jabatan}
-                                />
-                            </FormField>
+                                    <c.icon
+                                        className={cn(
+                                            'size-5 shrink-0',
+                                            cara === c.nilai
+                                                ? 'text-hijau-600'
+                                                : 'text-navy-500',
+                                        )}
+                                    />
+                                    <span>
+                                        <span className="block text-sm font-bold text-navy-900">
+                                            {c.label}
+                                        </span>
+                                        <span className="block text-xs text-muted-foreground">
+                                            {c.ket}
+                                        </span>
+                                    </span>
+                                </button>
+                            ))}
                         </div>
                     </FormSection>
                 )}
 
-                <div className="flex flex-col-reverse gap-2 border-t pt-6 sm:flex-row sm:justify-end">
-                    <Button asChild variant="ghost">
-                        <Link href={akunRoutes.index().url}>Batal</Link>
-                    </Button>
-                    <Button type="submit" disabled={processing}>
-                        {processing && (
-                            <LoaderCircle className="animate-spin" />
+                {!edit && cara === 'impor' ? (
+                    <ImporAkun role={data.role} />
+                ) : (
+                    <>
+                        <FormSection title="Data login">
+                            <FormField
+                                label="Nama lengkap"
+                                htmlFor="name"
+                                error={errors.name}
+                                wajib
+                            >
+                                <Input
+                                    id="name"
+                                    value={data.name}
+                                    onChange={(e) =>
+                                        setData('name', e.target.value)
+                                    }
+                                    aria-invalid={!!errors.name}
+                                    autoComplete="off"
+                                />
+                            </FormField>
+                            <div className="grid gap-5 sm:grid-cols-2">
+                                <FormField
+                                    label="Email"
+                                    htmlFor="email"
+                                    error={errors.email}
+                                    wajib
+                                >
+                                    <Input
+                                        id="email"
+                                        type="email"
+                                        inputMode="email"
+                                        value={data.email}
+                                        onChange={(e) =>
+                                            setData('email', e.target.value)
+                                        }
+                                        aria-invalid={!!errors.email}
+                                        autoComplete="off"
+                                    />
+                                </FormField>
+                                <FormField
+                                    label={
+                                        edit
+                                            ? 'Kata sandi baru'
+                                            : 'Kata sandi awal'
+                                    }
+                                    htmlFor="password"
+                                    error={errors.password}
+                                    hint="Minimal 8 karakter."
+                                    wajib={!edit}
+                                >
+                                    <Input
+                                        id="password"
+                                        type="text"
+                                        value={data.password}
+                                        onChange={(e) =>
+                                            setData('password', e.target.value)
+                                        }
+                                        aria-invalid={!!errors.password}
+                                        autoComplete="new-password"
+                                        placeholder={
+                                            edit
+                                                ? 'Biarkan kosong jika tetap'
+                                                : ''
+                                        }
+                                    />
+                                </FormField>
+                            </div>
+                        </FormSection>
+
+                        {data.role === 'siswa' && (
+                            <FormSection
+                                title="Data siswa"
+                                description="Perusahaan dan periode magang diambil dari kelompok magang."
+                            >
+                                <div className="grid gap-5 sm:grid-cols-2">
+                                    <FormField
+                                        label="ID siswa (NIS)"
+                                        htmlFor="id_siswa"
+                                        error={errors.id_siswa}
+                                        wajib
+                                    >
+                                        <Input
+                                            id="id_siswa"
+                                            inputMode="numeric"
+                                            value={data.id_siswa}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'id_siswa',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            aria-invalid={!!errors.id_siswa}
+                                        />
+                                    </FormField>
+                                    <FormField
+                                        label="Program keahlian"
+                                        error={errors.program_keahlian}
+                                        wajib
+                                    >
+                                        <PilihProgram
+                                            value={data.program_keahlian}
+                                            onChange={(v) =>
+                                                setData('program_keahlian', v)
+                                            }
+                                            pilihan={programKeahlian}
+                                            invalid={!!errors.program_keahlian}
+                                        />
+                                    </FormField>
+                                </div>
+                                {edit && (
+                                    <div className="flex gap-3 rounded-2xl bg-navy-50 p-4 text-sm text-navy-800">
+                                        <Info className="mt-0.5 size-4 shrink-0 text-navy-500" />
+                                        <div>
+                                            <div>
+                                                Kelompok:{' '}
+                                                <strong>
+                                                    {akun.kelompok ??
+                                                        'Belum masuk kelompok'}
+                                                </strong>
+                                            </div>
+                                            <div>
+                                                Unit kerja:{' '}
+                                                <strong>
+                                                    {akun.unit_kerja ??
+                                                        'Belum dipilih siswa'}
+                                                </strong>
+                                            </div>
+                                            <div className="mt-1 text-xs text-muted-foreground">
+                                                Kelompok diatur di menu Kelompok
+                                                Magang.
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </FormSection>
                         )}
-                        {edit ? 'Simpan perubahan' : 'Buat akun'}
-                    </Button>
-                </div>
+
+                        {data.role === 'guru' && (
+                            <FormSection
+                                title="Data guru"
+                                description="Program keahlian menentukan kompetensi dan materi yang bisa dikelola guru."
+                            >
+                                <div className="grid gap-5 sm:grid-cols-2">
+                                    <FormField
+                                        label="NIP"
+                                        htmlFor="nip"
+                                        error={errors.nip}
+                                        hint="Opsional."
+                                    >
+                                        <Input
+                                            id="nip"
+                                            inputMode="numeric"
+                                            value={data.nip}
+                                            onChange={(e) =>
+                                                setData('nip', e.target.value)
+                                            }
+                                            aria-invalid={!!errors.nip}
+                                        />
+                                    </FormField>
+                                    <FormField
+                                        label="Program keahlian"
+                                        error={errors.program_keahlian}
+                                        hint="Wajib diisi jika guru akan membuat kompetensi dan materi."
+                                    >
+                                        <PilihProgram
+                                            value={data.program_keahlian}
+                                            onChange={(v) =>
+                                                setData('program_keahlian', v)
+                                            }
+                                            pilihan={programKeahlian}
+                                            bolehKosong
+                                            invalid={!!errors.program_keahlian}
+                                        />
+                                    </FormField>
+                                </div>
+                            </FormSection>
+                        )}
+
+                        {data.role === 'industri' && (
+                            <FormSection
+                                title="Data pembimbing industri"
+                                description="Akun industri wajib terhubung ke satu perusahaan."
+                            >
+                                <div className="grid gap-5 sm:grid-cols-2">
+                                    <FormField
+                                        label="Perusahaan"
+                                        error={errors.perusahaan_id}
+                                        wajib
+                                        hint={
+                                            perusahaan.length === 0
+                                                ? 'Belum ada perusahaan. Tambahkan dulu di menu Perusahaan.'
+                                                : undefined
+                                        }
+                                    >
+                                        <Select
+                                            value={data.perusahaan_id}
+                                            onValueChange={(v) =>
+                                                setData('perusahaan_id', v)
+                                            }
+                                        >
+                                            <SelectTrigger
+                                                className="w-full"
+                                                aria-invalid={
+                                                    !!errors.perusahaan_id
+                                                }
+                                            >
+                                                <SelectValue placeholder="Pilih perusahaan" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                {perusahaan.map((p) => (
+                                                    <SelectItem
+                                                        key={p.id}
+                                                        value={String(p.id)}
+                                                    >
+                                                        {p.nama}
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    </FormField>
+                                    <FormField
+                                        label="Jabatan"
+                                        htmlFor="jabatan"
+                                        error={errors.jabatan}
+                                        hint="Opsional."
+                                    >
+                                        <Input
+                                            id="jabatan"
+                                            value={data.jabatan}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'jabatan',
+                                                    e.target.value,
+                                                )
+                                            }
+                                            aria-invalid={!!errors.jabatan}
+                                        />
+                                    </FormField>
+                                </div>
+                            </FormSection>
+                        )}
+
+                        <div className="flex flex-col-reverse gap-2 border-t pt-6 sm:flex-row sm:justify-end">
+                            <Button asChild variant="ghost">
+                                <Link href={akunRoutes.index().url}>Batal</Link>
+                            </Button>
+                            <Button type="submit" disabled={processing}>
+                                {processing && (
+                                    <LoaderCircle className="animate-spin" />
+                                )}
+                                {edit ? 'Simpan perubahan' : 'Buat akun'}
+                            </Button>
+                        </div>
+                    </>
+                )}
             </form>
         </>
     );

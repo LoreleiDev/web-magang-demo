@@ -1,4 +1,5 @@
 import type { Auth } from '@/types/auth';
+import type { HasilImporAkun } from '@/types/impor';
 import type { HasilKuis } from '@/types/siswa';
 
 declare module 'react' {
@@ -18,6 +19,7 @@ declare module '@inertiajs/core' {
         flashDataType: {
             toast?: { type: 'success' | 'error'; message: string };
             hasilKuis?: HasilKuis;
+            hasilImpor?: HasilImporAkun;
         };
     }
 }

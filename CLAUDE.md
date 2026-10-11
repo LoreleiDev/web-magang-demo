@@ -199,6 +199,8 @@ bahwa siswa belum terdaftar di kelompok magang dan diminta menghubungi sekolah.
 - Buat akun **guru**, **siswa**, dan **industri** (nama, email, password awal, role).
 - Akun industri wajib dihubungkan ke satu **Perusahaan**.
 - Edit, nonaktifkan, dan hapus akun (keputusan 13 no. 25).
+- Tambah akun **manual** (form) atau **impor dari file Excel (.xlsx)/CSV** sesuai
+  template per role (keputusan 13 no. 37).
 - Daftar akun dapat difilter per role dan program keahlian (guru & siswa), dicari
   (nama, email, NIS, NIP), dan diurutkan: nama A–Z (bawaan), Z–A, NIS/NIP
   (siswa urut NIS, lalu guru urut NIP), atau terbaru dibuat.
@@ -675,6 +677,9 @@ Teknis:
 | 33  | Konfirmasi logout                              | SweetAlert2 (diminta pemilik proyek), diberi gaya sesuai tema |
 | 34  | Unit kerja siswa                               | Dipilih siswa sendiri dari daftar unit kerja perusahaan dan dapat diganti kapan saja; pembimbing industri juga dapat mengubah unit kerja siswa di perusahaannya dari halaman detail siswa (revisi 4 Okt 2026) |
 | 35  | Hari magang                                    | Dihitung dalam hari kalender dari `periode_mulai` sampai `periode_selesai` kelompok |
+| 37  | Impor akun dari file                           | Superadmin dapat menambah banyak akun guru/siswa/industri dari file .xlsx atau .csv sesuai template yang diunduh di website (revisi 11 Okt 2026). Kolom: siswa = nama, email, nis, program_keahlian; guru = nama, email, nip (opsional), program_keahlian (opsional); industri = nama, email, perusahaan (nama terdaftar), jabatan (opsional). Password awal: siswa = NIS, guru = NIP (acak jika kosong), industri = acak; daftar password ditampilkan sekali setelah impor. Semua baris divalidasi dulu; satu baris salah = tidak ada akun dibuat. Maks. 500 akun/2 MB per file. Impor file SQL tidak disediakan (alasan keamanan). Hanya menambah akun baru, tidak mengubah akun yang ada |
+| 38  | Logo & favicon                                 | Logo resmi (buku terbuka, sekolah, jembatan hijau, industri) di `public/logo-magangbridge.png`, tampil di kotak putih; favicon .ico/PNG berlatar kotak putih agar terlihat di tab gelap |
+| 39  | Deploy production                              | Server (Hostinger hPanel, **PHP 8.4.1+**) memakai branch `production` yang dibuat GitHub Actions setelah test lulus (berisi `public/build`); perbarui dengan `bash deploy.sh`. Panduan lengkap di `DEPLOY.md`, contoh `.env` di `.env.production.example` |
 | 36  | Unit kerja oleh industri                       | Pembimbing industri dapat **menambah dan menghapus** unit kerja perusahaannya sendiri (revisi 4 Okt 2026); aturan sama dengan superadmin: maks. 100 karakter, tidak kembar, maks. 30 unit, unit yang masih dipilih siswa tidak bisa dihapus, minimal tersisa satu unit. Ganti nama unit tetap lewat superadmin |
 
 ### 13.1 Keputusan Badge Verifikasi Materi (sudah dijawab)
@@ -696,6 +701,9 @@ Teknis:
 - Tegakkan hak akses (bagian 2.1) di backend.
 - Semua teks UI dalam bahasa Indonesia.
 - Uji tampilan di lebar layar smartphone (±360–400px) untuk setiap halaman baru.
+- Upload file: validasi ekstensi **dan** isi (`mimetypes`), simpan di disk privat, sajikan
+  hanya lewat controller yang memeriksa hak akses (dengan header `nosniff`).
+- Jangan menaruh password/rahasia di seeder atau kode; ambil dari `.env` lewat file config.
 
 ## 15. Aturan Tampilan
 

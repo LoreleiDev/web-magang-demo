@@ -14,3 +14,6 @@ Artisan::command('inspire', function () {
 Schedule::command('queue:work --stop-when-empty --max-time=55 --tries=3')
     ->everyMinute()
     ->withoutOverlapping(5);
+
+// Bersihkan catatan job gagal yang lebih dari 7 hari agar tabel tidak terus membesar.
+Schedule::command('queue:prune-failed --hours=168')->daily();

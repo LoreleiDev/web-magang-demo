@@ -32,6 +32,8 @@ Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
 Route::middleware(['auth', 'role:superadmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
     Route::get('/', Superadmin\DashboardController::class)->name('dashboard');
 
+    Route::get('akun/impor/template/{role}', [Superadmin\ImporAkunController::class, 'template'])->name('akun.impor.template');
+    Route::post('akun/impor', [Superadmin\ImporAkunController::class, 'store'])->name('akun.impor.store');
     Route::resource('akun', Superadmin\AkunController::class)->except(['show']);
     Route::patch('akun/{akun}/status', [Superadmin\AkunController::class, 'ubahStatus'])->name('akun.status');
 

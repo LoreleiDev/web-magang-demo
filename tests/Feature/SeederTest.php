@@ -53,3 +53,9 @@ test('DemoSeeder membuat data contoh untuk pengembangan lokal', function () {
             ->toBe(['dokumen', 'gambar', 'youtube']);
     });
 });
+
+test('DemoSeeder menolak jalan di production', function () {
+    app()->detectEnvironment(fn () => 'production');
+
+    app(DemoSeeder::class)->run();
+})->throws(RuntimeException::class, 'tidak boleh dijalankan di production');
